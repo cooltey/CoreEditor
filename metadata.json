@@ -1,0 +1,7 @@
+{
+  "name": "CoreEditor",
+  "description": "A sleek, high-performance Markdown and text editor with AI Agent assistance, multi-tab management, rich formatting, and real-time preview.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
