@@ -37,12 +37,12 @@ npm install
 npm run build:win
 ```
 
-> **Troubleshooting Note (Rollup win32 module)**:
-> If you encounter `Cannot find module @rollup/rollup-win32-x64-msvc`, simply run:
+> **Troubleshooting Note (Windows native modules)**:
+> If npm on Windows skips native Rust/C++ binaries (`lightningcss`, `rollup`, or `@tailwindcss/oxide`), run:
 > ```bash
-> npm install @rollup/rollup-win32-x64-msvc --save-optional
+> npm install @rollup/rollup-win32-x64-msvc lightningcss-win32-x64-msvc @tailwindcss/oxide-win32-x64-msvc
 > ```
-> And re-run `npm run build:win`.
+> And re-run `npm run build:win`. Alternatively, double-click `build-windows-exe.bat` which auto-installs them.
 
 If you need a standard Windows installer (NSIS Setup wizard):
 ```bash

@@ -22,10 +22,18 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: Ensure Windows native Rollup binary is installed (resolves npm issue #4828)
+:: Ensure Windows native binaries are installed (resolves npm issue #4828 for Rollup, LightningCSS, and Tailwind Oxide)
 if not exist "node_modules\@rollup\rollup-win32-x64-msvc" (
-    echo [*] Ensuring Windows native Rollup compiler is present...
+    echo [*] Installing Windows native Rollup compiler...
     call npm install @rollup/rollup-win32-x64-msvc --no-save
+)
+if not exist "node_modules\lightningcss-win32-x64-msvc" (
+    echo [*] Installing Windows native LightningCSS compiler...
+    call npm install lightningcss-win32-x64-msvc --no-save
+)
+if not exist "node_modules\@tailwindcss\oxide-win32-x64-msvc" (
+    echo [*] Installing Windows native Tailwind Oxide compiler...
+    call npm install @tailwindcss/oxide-win32-x64-msvc --no-save
 )
 
 echo.
@@ -33,8 +41,8 @@ echo [2/3] Compiling React assets and Packaging Windows .exe...
 call npm run build:win
 if %errorlevel% neq 0 (
     echo.
-    echo [!] Initial build encountered an issue. Attempting Rollup Windows native fix...
-    call npm install @rollup/rollup-win32-x64-msvc --force
+    echo [!] Initial build encountered an issue. Attempting comprehensive Windows native modules fix...
+    call npm install @rollup/rollup-win32-x64-msvc lightningcss-win32-x64-msvc @tailwindcss/oxide-win32-x64-msvc --force
     call npm run build:win
 )
 

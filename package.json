@@ -35,7 +35,9 @@
     "qs": "^6.16.0"
   },
   "optionalDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.63.1"
+    "@rollup/rollup-win32-x64-msvc": "^4.63.1",
+    "lightningcss-win32-x64-msvc": "^1.32.0",
+    "@tailwindcss/oxide-win32-x64-msvc": "^4.3.3"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
