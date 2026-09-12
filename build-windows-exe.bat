@@ -22,14 +22,20 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+:: Ensure Windows native Rollup binary is installed (resolves npm issue #4828)
+if not exist "node_modules\@rollup\rollup-win32-x64-msvc" (
+    echo [*] Ensuring Windows native Rollup compiler is present...
+    call npm install @rollup/rollup-win32-x64-msvc --no-save
+)
+
 echo.
 echo [2/3] Compiling React assets and Packaging Windows .exe...
 call npm run build:win
 if %errorlevel% neq 0 (
     echo.
-    echo [ERROR] Build encountered an issue. 
-    echo Trying fallback portable packaging command...
-    call npx electron-builder --win portable
+    echo [!] Initial build encountered an issue. Attempting Rollup Windows native fix...
+    call npm install @rollup/rollup-win32-x64-msvc --force
+    call npm run build:win
 )
 
 echo.

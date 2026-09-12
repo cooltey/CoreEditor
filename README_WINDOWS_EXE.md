@@ -37,6 +37,13 @@ npm install
 npm run build:win
 ```
 
+> **Troubleshooting Note (Rollup win32 module)**:
+> If you encounter `Cannot find module @rollup/rollup-win32-x64-msvc`, simply run:
+> ```bash
+> npm install @rollup/rollup-win32-x64-msvc --save-optional
+> ```
+> And re-run `npm run build:win`.
+
 If you need a standard Windows installer (NSIS Setup wizard):
 ```bash
 npm run package:win-installer

@@ -121,6 +121,9 @@ export const PackageExeModal: React.FC<PackageExeModalProps> = ({ isOpen, onClos
                   </button>
                 </div>
               </div>
+              <p className="text-[10px] text-[#767684]">
+                * If npm reports missing rollup-win32 module, run: <code className="text-sky-300">npm i @rollup/rollup-win32-x64-msvc</code>
+              </p>
             </div>
           </div>
 
