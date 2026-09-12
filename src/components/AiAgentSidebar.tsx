@@ -42,28 +42,24 @@ const DEFAULT_CONFIG: AiAgentConfig = {
 
 const PROMPT_TEMPLATES = [
   {
-    label: '✍️ 接續撰寫',
-    prompt: '請根據目前的 Markdown 內容，接續流暢且專業地寫下一段內容。',
+    label: '✍️ Continue Writing',
+    prompt: 'Please continue writing seamlessly and professionally based on the current Markdown context.',
   },
   {
-    label: '✨ 潤稿與優化',
-    prompt: '請潤飾這段文字，提升語句流暢度與專業度，並維持 Markdown 格式。',
+    label: '✨ Polish & Improve',
+    prompt: 'Please polish this text, improving clarity, flow, and elegance while preserving Markdown structure.',
   },
   {
-    label: '🌐 翻成繁中',
-    prompt: '請將選取或文件內容翻譯為流暢自然的台灣繁體中文，保留 Markdown 結構。',
-  },
-  {
-    label: '🌐 翻成英文',
+    label: '🌐 Translate to English',
     prompt: 'Please translate the content into professional, natural English while preserving Markdown structure.',
   },
   {
-    label: '📊 轉為表格',
-    prompt: '請將這段內容中的數據或重點結構化整理成乾淨漂亮的 Markdown 表格。',
+    label: '📊 Convert to Table',
+    prompt: 'Please structure the key data and points from this content into a clean, well-formatted Markdown table.',
   },
   {
-    label: '📝 生成摘要',
-    prompt: '請為目前的 Markdown 文件整理出 3-5 點核心重點摘要。',
+    label: '📝 Generate Summary',
+    prompt: 'Please summarize the core takeaways of this Markdown document into 3-5 concise bullet points.',
   },
 ];
 
@@ -80,7 +76,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
       id: 'welcome',
       role: 'assistant',
       content:
-        '你好！我是 **CoreEditor AI Agent** 🐕🎯\n我可以協助你：\n- ✍️ 接續寫作、擴充章節\n- ✨ 校對文法、潤飾文章\n- 🌐 多語言翻譯\n- 📊 自動生成表格與格式優化\n\n你可以直接在下方輸入指令，或點擊上方的快捷功能！',
+        'Hello! I am your **CoreEditor AI Agent** 🐕🎯\n\nI can help you with:\n- ✍️ Continuing text & expanding document sections\n- ✨ Proofreading grammar & polishing style\n- 🌐 Multilingual translation\n- 📊 Generating clean Markdown tables & outlines\n\nEnter your prompt below or click any quick action above!',
       timestamp: Date.now(),
     },
   ]);
@@ -149,18 +145,18 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
       if (res.ok && data.success) {
         setTestStatus({
           state: 'success',
-          message: `連線成功！(${data.provider} - ${data.model || 'Ready'})`,
+          message: `Connected! (${data.provider} - ${data.model || 'Ready'})`,
         });
       } else {
         setTestStatus({
           state: 'error',
-          message: data.error || '連線失敗，請檢查設定與金鑰。',
+          message: data.error || 'Connection failed. Please check endpoint and API key.',
         });
       }
     } catch (err) {
       setTestStatus({
         state: 'error',
-        message: err instanceof Error ? err.message : '連線逾時或網路錯誤',
+        message: err instanceof Error ? err.message : 'Connection timeout or network error',
       });
     }
   };
@@ -222,7 +218,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
       const assistantMsg: AiChatMessage = {
         id: `agent-${Date.now()}`,
         role: 'assistant',
-        content: data.reply || '（未收到回覆）',
+        content: data.reply || '(No response received)',
         timestamp: Date.now(),
       };
 
@@ -231,7 +227,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
       const errorMsg: AiChatMessage = {
         id: `agent-${Date.now()}`,
         role: 'assistant',
-        content: `⚠️ **Agent 連線異常**: ${err instanceof Error ? err.message : '請檢查網路連線或金鑰設定。'}`,
+        content: `⚠️ **Agent Connection Error**: ${err instanceof Error ? err.message : 'Please check your network connection or API settings.'}`,
         timestamp: Date.now(),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -264,7 +260,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
       {
         id: 'welcome',
         role: 'assistant',
-        content: '對話記錄已清空。請問有什麼可以為您的 Markdown 文件提供協助？🐕🎯',
+        content: 'Chat history cleared. How can I assist you with your Markdown writing? 🐕🎯',
         timestamp: Date.now(),
       },
     ]);
@@ -300,7 +296,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
           <button
             id="agent-settings-toggle-btn"
             onClick={() => setShowSettings(!showSettings)}
-            title="Agent 連線設定"
+            title="Agent Connection Settings"
             className={`p-1.5 rounded hover:bg-[#282834] transition-colors ${
               showSettings ? 'text-sky-400 bg-[#282834]' : 'text-[#8e8e9c]'
             }`}
@@ -310,7 +306,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
           <button
             id="agent-clear-btn"
             onClick={handleClearHistory}
-            title="清空對話"
+            title="Clear Chat History"
             className="p-1.5 rounded hover:bg-[#282834] text-[#8e8e9c] hover:text-white transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -318,7 +314,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
           <button
             id="agent-close-btn"
             onClick={onClose}
-            title="關閉 Agent 側邊欄"
+            title="Close AI Agent Sidebar"
             className="p-1.5 rounded hover:bg-[#282834] text-[#8e8e9c] hover:text-white transition-colors"
           >
             <X className="w-3.5 h-3.5" />
@@ -332,7 +328,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
           <div className="flex items-center justify-between text-white font-medium text-[11px]">
             <span className="flex items-center gap-1.5">
               <Cpu className="w-3.5 h-3.5 text-sky-400" />
-              AI Agent 連線設定
+              AI Agent Connection Settings
             </span>
             <button
               onClick={() => setShowSettings(false)}
@@ -344,7 +340,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
 
           {/* Provider Selector */}
           <div className="space-y-1">
-            <label className="text-[10px] text-[#9a9aa8] block">連線提供者 (Provider)</label>
+            <label className="text-[10px] text-[#9a9aa8] block">Connection Provider</label>
             <div className="grid grid-cols-2 gap-1.5">
               <button
                 type="button"
@@ -356,7 +352,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
                 }`}
               >
                 <Sparkles className="w-3 h-3 text-sky-400" />
-                內建 Gemini
+                Built-in Gemini
               </button>
               <button
                 type="button"
@@ -368,7 +364,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
                 }`}
               >
                 <Globe className="w-3 h-3 text-purple-400" />
-                自訂 External / Ollama
+                External / Ollama
               </button>
             </div>
           </div>
@@ -378,7 +374,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
             <div className="space-y-2 pt-1 border-t border-[#262632]">
               <div>
                 <label className="text-[10px] text-[#9a9aa8] block mb-0.5">
-                  Endpoint URL (支援 Ollama / Dify / OpenAI API)
+                  Endpoint URL (Supports Ollama / LM Studio / OpenAI API)
                 </label>
                 <input
                   type="text"
@@ -392,7 +388,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[10px] text-[#9a9aa8] block mb-0.5">Model 名稱</label>
+                  <label className="text-[10px] text-[#9a9aa8] block mb-0.5">Model Name</label>
                   <input
                     type="text"
                     placeholder="llama3 / gpt-4o-mini"
@@ -404,7 +400,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-[#9a9aa8] block mb-0.5">API Key (本地可略過)</label>
+                  <label className="text-[10px] text-[#9a9aa8] block mb-0.5">API Key (Optional for local)</label>
                   <input
                     type="password"
                     placeholder="sk-..."
@@ -429,7 +425,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
               <RefreshCw
                 className={`w-3 h-3 ${testStatus.state === 'testing' ? 'animate-spin' : ''}`}
               />
-              測試連線
+              Test Connection
             </button>
 
             {testStatus.state === 'success' && (
@@ -486,17 +482,17 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
                   <button
                     onClick={() => handleInsert(msg.content, msg.id)}
                     className="px-1.5 py-0.5 rounded bg-[#17171e] hover:bg-[#2d2d3c] text-[#a4a4b6] hover:text-sky-300 flex items-center gap-1 text-[10px] transition-colors"
-                    title="將內容插入目前光標位置"
+                    title="Insert content at current cursor position"
                   >
                     {insertedId === msg.id ? (
                       <>
                         <Check className="w-2.5 h-2.5 text-emerald-400" />
-                        <span>已插入</span>
+                        <span>Inserted</span>
                       </>
                     ) : (
                       <>
                         <ArrowDownToLine className="w-2.5 h-2.5" />
-                        <span>插入游標</span>
+                        <span>Insert at Cursor</span>
                       </>
                     )}
                   </button>
@@ -504,16 +500,16 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
                   <button
                     onClick={() => onReplaceText(msg.content)}
                     className="px-1.5 py-0.5 rounded bg-[#17171e] hover:bg-[#2d2d3c] text-[#a4a4b6] hover:text-amber-300 flex items-center gap-1 text-[10px] transition-colors"
-                    title="替換選取或整篇 Markdown 文件"
+                    title="Replace selected text or entire document"
                   >
                     <RefreshCw className="w-2.5 h-2.5" />
-                    <span>替換</span>
+                    <span>Replace</span>
                   </button>
 
                   <button
                     onClick={() => handleCopy(msg.content, msg.id)}
                     className="px-1.5 py-0.5 rounded bg-[#17171e] hover:bg-[#2d2d3c] text-[#a4a4b6] hover:text-white flex items-center gap-1 text-[10px] transition-colors"
-                    title="複製 Markdown 內容"
+                    title="Copy Markdown content"
                   >
                     {copiedId === msg.id ? (
                       <Check className="w-2.5 h-2.5 text-emerald-400" />
@@ -533,7 +529,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
         {isLoading && (
           <div className="flex items-center gap-2 text-[#8e8e9c] text-[11px] p-2 bg-[#1b1b24] rounded border border-[#2b2b38] w-fit">
             <Sparkles className="w-3.5 h-3.5 animate-spin text-sky-400" />
-            <span>AI Agent 正在思考與撰寫 Markdown...</span>
+            <span>Core AI Agent is thinking and drafting Markdown...</span>
           </div>
         )}
 
@@ -554,11 +550,11 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
             <FileText className="w-3 h-3 text-sky-400" />
             <span>
               {selectedText && selectedText.trim().length > 0
-                ? `附帶選取文字 (${selectedText.length} 字)`
-                : `附帶文件上下文 (${editorContent.length} 字)`}
+                ? `Include selected text (${selectedText.length} chars)`
+                : `Include document context (${editorContent.length} chars)`}
             </span>
           </label>
-          <span className="text-[#646472]">Shift+Enter 換行</span>
+          <span className="text-[#646472]">Shift+Enter for newline</span>
         </div>
 
         <div className="relative flex items-end bg-[#1e1e26] border border-[#323242] focus-within:border-sky-500 rounded-lg p-1 transition-colors">
@@ -568,7 +564,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
             value={inputPrompt}
             onChange={(e) => setInputPrompt(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="詢問 AI Agent 或輸入寫作指令..."
+            placeholder="Ask Core AI Agent or enter writing prompt..."
             className="w-full bg-transparent text-white text-[11px] placeholder-[#6b6b7a] resize-none px-2 py-1 focus:outline-hidden leading-relaxed"
           />
           <button
@@ -576,7 +572,7 @@ export const AiAgentSidebar: React.FC<AiAgentSidebarProps> = ({
             onClick={() => handleSendMessage()}
             disabled={!inputPrompt.trim() || isLoading}
             className="p-1.5 rounded-md bg-sky-600 hover:bg-sky-500 disabled:opacity-40 disabled:hover:bg-sky-600 text-white transition-colors shrink-0 mb-0.5 mr-0.5"
-            title="發送指令 (Enter)"
+            title="Send prompt (Enter)"
           >
             <Send className="w-3.5 h-3.5" />
           </button>

@@ -33,8 +33,8 @@ export const PackageExeModal: React.FC<PackageExeModalProps> = ({ isOpen, onClos
               <img src="/doge-target-icon.svg" alt="" className="w-full h-full object-cover" />
             </div>
             <div>
-              <div className="font-semibold text-white text-sm">打包 CoreEditor 為 Windows 可執行檔 (.exe)</div>
-              <div className="text-[11px] text-[#8e8e9c]">Build CoreEditor Desktop Executable Guide</div>
+              <div className="font-semibold text-white text-sm">Package CoreEditor as Windows Executable (.exe)</div>
+              <div className="text-[11px] text-[#8e8e9c]">Build Standalone Windows Desktop Executable</div>
             </div>
           </div>
           <button
@@ -52,10 +52,10 @@ export const PackageExeModal: React.FC<PackageExeModalProps> = ({ isOpen, onClos
           <div className="bg-[#1b1b22] border border-[#2d2d38] rounded-md p-3.5 space-y-2">
             <div className="flex items-center gap-2 text-white font-medium text-[13px]">
               <span className="w-5 h-5 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-bold">1</span>
-              <span>匯出或下載專案原始碼</span>
+              <span>Export or Download Project Source</span>
             </div>
             <p className="text-[#a4a4b2] text-[11px] leading-relaxed pl-7">
-              點選右上角齒輪選單，選擇 <strong className="text-white">「Download as ZIP」</strong>，並將壓縮檔解壓縮至您 Windows 電腦上的任意資料夾。
+              Click the gear icon in the top-right menu and choose <strong className="text-white">"Download as ZIP"</strong> (or clone via Git), then extract the archive into any folder on your Windows PC.
             </p>
           </div>
 
@@ -63,17 +63,17 @@ export const PackageExeModal: React.FC<PackageExeModalProps> = ({ isOpen, onClos
           <div className="bg-[#1b1b22] border border-[#2d2d38] rounded-md p-3.5 space-y-3">
             <div className="flex items-center gap-2 text-white font-medium text-[13px]">
               <span className="w-5 h-5 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-bold">2</span>
-              <span>執行打包（兩種方式）</span>
+              <span>Build Executable (Two Methods)</span>
             </div>
 
             {/* Option A: 1-Click Bat */}
             <div className="pl-7 space-y-1.5">
               <div className="text-sky-400 font-semibold flex items-center gap-1.5">
                 <Package className="w-3.5 h-3.5" />
-                方式 A：一鍵批次檔（最簡單）
+                Option A: One-Click Batch Script (Easiest)
               </div>
               <p className="text-[#9898a8] text-[11px]">
-                直接雙擊專案資料夾內的批次檔：
+                Simply double-click the batch file in the project folder:
               </p>
               <div className="flex items-center justify-between bg-[#131318] px-3 py-2 rounded border border-[#2e2e38] font-mono text-[11px] text-emerald-400">
                 <span>build-windows-exe.bat</span>
@@ -86,7 +86,7 @@ export const PackageExeModal: React.FC<PackageExeModalProps> = ({ isOpen, onClos
                 </button>
               </div>
               <p className="text-[10px] text-[#767684]">
-                * 該腳本會自動安裝相依套件並編譯生成獨立免安裝版 .exe，完成後自動開啟 release 目錄。
+                * Automatically installs dependencies, compiles Vite bundles, and opens the release folder.
               </p>
             </div>
 
@@ -96,10 +96,10 @@ export const PackageExeModal: React.FC<PackageExeModalProps> = ({ isOpen, onClos
             <div className="pl-7 space-y-1.5">
               <div className="text-purple-400 font-semibold flex items-center gap-1.5">
                 <Terminal className="w-3.5 h-3.5" />
-                方式 B：使用終端機指令
+                Option B: Command Line (PowerShell / CMD)
               </div>
               <p className="text-[#9898a8] text-[11px]">
-                在專案資料夾開啟 PowerShell 或 CMD 終端機：
+                Run these commands in your project root:
               </p>
               <div className="bg-[#131318] p-2.5 rounded border border-[#2e2e38] font-mono text-[11px] space-y-1.5">
                 <div className="flex items-center justify-between text-[#c0c0d0]">
@@ -128,11 +128,11 @@ export const PackageExeModal: React.FC<PackageExeModalProps> = ({ isOpen, onClos
           <div className="bg-[#1b1b22] border border-[#2d2d38] rounded-md p-3.5 space-y-2">
             <div className="flex items-center gap-2 text-white font-medium text-[13px]">
               <span className="w-5 h-5 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-bold">3</span>
-              <span>取得 Windows 執行檔</span>
+              <span>Get Your Windows Executable</span>
             </div>
             <div className="pl-7 space-y-2">
               <p className="text-[#a4a4b2] text-[11px]">
-                打包完成後，將在 <code className="text-sky-300 bg-sky-950/40 px-1 py-0.5 rounded border border-sky-800/30">release\</code> 資料夾產生獨立執行檔：
+                Upon completion, your standalone portable executable will be ready in <code className="text-sky-300 bg-sky-950/40 px-1 py-0.5 rounded border border-sky-800/30">release\</code>:
               </p>
               <div className="flex items-center gap-2 p-2.5 bg-[#14141a] rounded border border-emerald-500/30 text-emerald-300 font-mono text-[11px]">
                 <FolderOpen className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -140,7 +140,7 @@ export const PackageExeModal: React.FC<PackageExeModalProps> = ({ isOpen, onClos
               </div>
               <div className="flex items-center gap-1.5 text-[11px] text-[#8e8e9c]">
                 <ArrowRight className="w-3 h-3 text-sky-400" />
-                <span>此檔案為<strong>綠色免安裝可執行檔</strong>，可複製到任何 Windows 電腦或隨身碟，點開即用且 100% 離線執行！</span>
+                <span>This is a <strong>standalone portable executable</strong>. Copy it to any Windows PC or USB drive and run 100% offline!</span>
               </div>
             </div>
           </div>
@@ -148,13 +148,13 @@ export const PackageExeModal: React.FC<PackageExeModalProps> = ({ isOpen, onClos
 
         {/* Footer */}
         <div className="flex justify-between items-center px-5 py-3.5 bg-[#1e1e24] border-t border-[#30303b]">
-          <span className="text-[11px] text-[#747482]">已預先配置 Electron 44 & Electron-Builder</span>
+          <span className="text-[11px] text-[#747482]">Pre-configured with Electron 44 & Electron-Builder</span>
           <button
             id="close-package-modal-confirm-btn"
             onClick={onClose}
             className="px-4 py-1.5 rounded bg-sky-600 hover:bg-sky-500 text-white font-medium text-xs transition-colors shadow"
           >
-            瞭解並關閉
+            Got it, Close
           </button>
         </div>
       </div>

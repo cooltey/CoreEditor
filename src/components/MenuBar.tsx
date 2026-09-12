@@ -398,37 +398,31 @@ export const MenuBar: React.FC<MenuBarProps> = ({
             <div className="h-px bg-[#383842] my-1" />
             <div className="px-3 py-1 text-[10px] font-semibold text-[#888894] uppercase tracking-wider">Quick Actions</div>
             <button
-              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('請根據目前的 Markdown 內容，接續流暢且專業地寫下一段內容。'))}
+              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('Please continue writing seamlessly and professionally based on the current Markdown context.'))}
               className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
             >
               <span>✍️ Continue Writing</span>
             </button>
             <button
-              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('請潤飾這段文字，提升語句流暢度與專業度，並維持 Markdown 格式。'))}
+              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('Please polish this text, improving clarity, flow, and elegance while preserving Markdown structure.'))}
               className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
             >
               <span>✨ Polish & Grammar Fix</span>
             </button>
             <button
-              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('請將這段內容中的數據或重點結構化整理成乾淨漂亮的 Markdown 表格。'))}
+              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('Please structure the key data and points from this content into a clean, well-formatted Markdown table.'))}
               className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
             >
               <span>📊 Convert to Markdown Table</span>
             </button>
             <button
-              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('請為目前的 Markdown 文件整理出 3-5 點核心重點摘要。'))}
+              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('Please summarize the core takeaways of this Markdown document into 3-5 concise bullet points.'))}
               className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
             >
               <span>📝 Summarize Document</span>
             </button>
             <button
-              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('請將選取或文件內容翻譯為流暢自然的繁體中文，保留 Markdown 結構。'))}
-              className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
-            >
-              <span>🌐 Translate to Traditional Chinese</span>
-            </button>
-            <button
-              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('Please translate the content into natural, professional English.'))}
+              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('Please translate the content into professional, natural English while preserving Markdown structure.'))}
               className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
             >
               <span>🌐 Translate to English</span>

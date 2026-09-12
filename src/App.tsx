@@ -686,7 +686,7 @@ export default function App() {
     } else {
       handleUpdateContent(activeTab.content + '\n\n' + textToInsert);
     }
-    setSaveToast('Core AI: 內容已插入編輯器');
+    setSaveToast('Core AI: Content inserted at cursor');
   }, [activeTab.content, handleUpdateContent]);
 
   const handleReplaceTextFromAgent = useCallback((replacementText: string) => {
@@ -700,10 +700,10 @@ export default function App() {
         textarea.selectionStart = selectionStart;
         textarea.selectionEnd = selectionStart + replacementText.length;
       }, 50);
-      setSaveToast('Core AI: 已替換選取文字');
+      setSaveToast('Core AI: Selected text replaced');
     } else {
       handleUpdateContent(replacementText);
-      setSaveToast('Core AI: 已替換全文');
+      setSaveToast('Core AI: Document replaced');
     }
   }, [handleUpdateContent]);
 

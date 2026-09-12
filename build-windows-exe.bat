@@ -1,7 +1,7 @@
 @echo off
-title SublimeMark - Windows Executable Builder
+title CoreEditor - Windows Executable Builder
 echo =======================================================
-echo    SublimeMark Windows Executable Packaging Script
+echo    CoreEditor Windows Executable Packaging Script
 echo =======================================================
 echo.
 
@@ -36,7 +36,7 @@ echo.
 echo [3/3] Build Finished Successfully!
 echo =======================================================
 echo Your standalone Windows executable is ready in:
-echo   .\release\SublimeMark-Windows-Portable.exe
+echo   .\release\CoreEditor-Windows-Portable.exe
 echo =======================================================
 echo.
 
