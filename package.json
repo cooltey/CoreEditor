@@ -12,8 +12,10 @@
     "clean": "rm -rf dist server.js release",
     "lint": "tsc --noEmit",
     "electron": "electron .",
-    "build:win": "vite build && electron-builder --win portable",
-    "package:win": "vite build && electron-builder --win portable",
+    "build:win": "vite build && electron-builder --win nsis",
+    "build:installer": "vite build && electron-builder --win nsis",
+    "build:portable": "vite build && electron-builder --win portable",
+    "package:win": "vite build && electron-builder --win nsis",
     "package:win-installer": "vite build && electron-builder --win nsis"
   },
   "dependencies": {
@@ -64,13 +66,31 @@
     "win": {
       "target": [
         {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
           "target": "portable",
           "arch": [
             "x64"
           ]
         }
-      ],
-      "artifactName": "${productName}-Windows-Portable.${ext}"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CoreEditor",
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "uninstallDisplayName": "CoreEditor"
+    },
+    "portable": {
+      "artifactName": "${productName}-Portable.${ext}"
     }
   }
 }

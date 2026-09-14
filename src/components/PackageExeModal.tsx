@@ -131,19 +131,19 @@ export const PackageExeModal: React.FC<PackageExeModalProps> = ({ isOpen, onClos
           <div className="bg-[#1b1b22] border border-[#2d2d38] rounded-md p-3.5 space-y-2">
             <div className="flex items-center gap-2 text-white font-medium text-[13px]">
               <span className="w-5 h-5 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-bold">3</span>
-              <span>Get Your Windows Executable</span>
+              <span>Install & Pin to Windows Taskbar</span>
             </div>
             <div className="pl-7 space-y-2">
               <p className="text-[#a4a4b2] text-[11px]">
-                Upon completion, your standalone portable executable will be ready in <code className="text-sky-300 bg-sky-950/40 px-1 py-0.5 rounded border border-sky-800/30">release\</code>:
+                Upon completion, your Windows Installer will be ready in <code className="text-sky-300 bg-sky-950/40 px-1 py-0.5 rounded border border-sky-800/30">release\</code>:
               </p>
               <div className="flex items-center gap-2 p-2.5 bg-[#14141a] rounded border border-emerald-500/30 text-emerald-300 font-mono text-[11px]">
                 <FolderOpen className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="truncate">release\CoreEditor-Windows-Portable.exe</span>
+                <span className="truncate">release\CoreEditor-Setup-1.0.0.exe</span>
               </div>
               <div className="flex items-center gap-1.5 text-[11px] text-[#8e8e9c]">
-                <ArrowRight className="w-3 h-3 text-sky-400" />
-                <span>This is a <strong>standalone portable executable</strong>. Copy it to any Windows PC or USB drive and run 100% offline!</span>
+                <ArrowRight className="w-3 h-3 text-sky-400 shrink-0" />
+                <span>Double-click the setup file to install into Windows. It creates Start Menu & Desktop shortcuts and stays permanently pinned to your Taskbar!</span>
               </div>
             </div>
           </div>

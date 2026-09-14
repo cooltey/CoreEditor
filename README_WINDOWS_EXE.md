@@ -1,6 +1,6 @@
-# CoreEditor - Windows Executable (.exe) Packaging Guide
+# CoreEditor - Windows Desktop Application (.exe) Packaging Guide
 
-This project is fully configured with **Electron 44** and **Electron-Builder** to build standalone, 64-bit Windows portable executables (`.exe`) and installers (`Setup.exe`).
+This project is fully configured with **Electron 44** and **Electron-Builder** to build native Windows Installers (`CoreEditor-Setup-1.0.0.exe`) as well as standalone portable executables.
 
 ---
 
@@ -15,13 +15,18 @@ This project is fully configured with **Electron 44** and **Electron-Builder** t
 4. The script will automatically:
    - Check and install required dependencies (`npm install`)
    - Compile Vite static assets (`npm run build`)
-   - Run Electron-Builder to package the Windows executable (`npm run build:win`)
+   - Run Electron-Builder to package the Windows Installer (`npm run build:win`)
    - Open the `release\` folder upon completion!
 
-Output executable location:
+Output installer location:
 ```
-release\CoreEditor-Windows-Portable.exe
+release\CoreEditor-Setup-1.0.0.exe
 ```
+
+Double-click `CoreEditor-Setup-1.0.0.exe` to install CoreEditor onto your PC. Once installed:
+- It appears in your **Windows Start Menu** and creates a **Desktop Shortcut**.
+- You can **Pin to Taskbar** permanently — it will never disappear after closing or restarting your PC!
+- An uninstaller is also registered in Windows "Installed apps" settings.
 
 ---
 
@@ -33,9 +38,13 @@ Open PowerShell or Command Prompt (CMD) in the project directory:
 # 1. Install dependencies
 npm install
 
-# 2. Compile and package the Windows portable executable (.exe)
+# 2. Compile and package the Windows Installer (.exe)
 npm run build:win
 ```
+
+### Build Commands Reference:
+- `npm run build:win`: Builds the standard **Windows Installer** (`release/CoreEditor-Setup-1.0.0.exe`)
+- `npm run build:portable`: Builds a single standalone **Portable executable** (`release/CoreEditor-Portable.exe`)
 
 > **Troubleshooting Note (Windows native modules)**:
 > If npm on Windows skips native Rust/C++ binaries (`lightningcss`, `rollup`, or `@tailwindcss/oxide`), run:

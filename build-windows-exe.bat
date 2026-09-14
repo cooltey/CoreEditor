@@ -49,8 +49,13 @@ if %errorlevel% neq 0 (
 echo.
 echo [3/3] Build Finished Successfully!
 echo =======================================================
-echo Your standalone Windows executable is ready in:
-echo   .\release\CoreEditor-Windows-Portable.exe
+echo Your Windows Installer is ready in:
+echo   .\release\CoreEditor-Setup-1.0.0.exe
+echo.
+echo * Note: Double-click CoreEditor-Setup-1.0.0.exe to install.
+echo   It installs natively into Windows with a Start Menu
+echo   and Desktop shortcut, and stays permanently pinned
+echo   to your Taskbar!
 echo =======================================================
 echo.
 

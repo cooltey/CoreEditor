@@ -1,6 +1,11 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
 
+// Crucial for Windows: ensures taskbar pinning, icons, and Start Menu shortcuts persist permanently
+if (process.platform === 'win32') {
+  app.setAppUserModelId('com.coreeditor.app');
+}
+
 let mainWindow = null;
 
 function createWindow() {
