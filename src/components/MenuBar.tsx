@@ -29,12 +29,15 @@ interface MenuBarProps {
   onChangeSyntax: (syntax: SyntaxMode) => void;
   fontSize: number;
   onChangeFontSize: (delta: number) => void;
+  uiFontSize: number;
+  onChangeUiFontSize: (delta: number) => void;
+  previewFontSize: number;
+  onChangePreviewFontSize: (delta: number) => void;
+  onOpenFontSettings: () => void;
   autoSave: boolean;
   onToggleAutoSave: () => void;
   onOpenAbout: () => void;
   onOpenPackageModal: () => void;
-  onToggleAiAgent?: () => void;
-  onAiPromptAction?: (prompt: string) => void;
 }
 
 export const MenuBar: React.FC<MenuBarProps> = ({
@@ -65,12 +68,15 @@ export const MenuBar: React.FC<MenuBarProps> = ({
   onChangeSyntax,
   fontSize,
   onChangeFontSize,
+  uiFontSize,
+  onChangeUiFontSize,
+  previewFontSize,
+  onChangePreviewFontSize,
+  onOpenFontSettings,
   autoSave,
   onToggleAutoSave,
   onOpenAbout,
   onOpenPackageModal,
-  onToggleAiAgent,
-  onAiPromptAction,
 }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const menuBarRef = useRef<HTMLDivElement>(null);
@@ -105,7 +111,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
     <div 
       id="app-menubar"
       ref={menuBarRef} 
-      className="h-6 bg-[#1f1f23] border-b border-[#2d2d34] flex items-center px-1 text-xs text-[#b8b8c2] select-none relative z-30 font-sans"
+      className="h-6 bg-[#1f1f23] border-b border-[#2d2d34] flex items-center px-1 text-xs text-[#b8b8c2] select-none relative z-30 font-sans shrink-0"
     >
       {/* File Menu */}
       <div className="relative">
@@ -172,7 +178,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
           Edit
         </button>
         {activeMenu === 'Edit' && (
-          <div className="absolute top-6 left-0 min-w-[220px] bg-[#25252b] border border-[#3b3b44] rounded shadow-2xl py-1 z-50 text-[#d4d4dc]">
+          <div className="absolute top-6 left-0 min-w-[200px] bg-[#25252b] border border-[#3b3b44] rounded shadow-2xl py-1 z-50 text-[#d4d4dc]">
             <button onClick={() => triggerAction(() => onFormatAction('undo'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
               <span>Undo</span>
               <span className="text-[10px] text-[#8e8e99]">Ctrl+Z</span>
@@ -183,8 +189,8 @@ export const MenuBar: React.FC<MenuBarProps> = ({
             </button>
             <div className="h-px bg-[#383842] my-1" />
             <button onClick={() => triggerAction(() => onFormatAction('duplicateLine'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
-              <span>Duplicate Line</span>
-              <span className="text-[10px] text-[#8e8e99]">Ctrl+Shift+D</span>
+              <span>Duplicate Current Line</span>
+              <span className="text-[10px] text-[#8e8e99]">Shift+Down</span>
             </button>
             <button onClick={() => triggerAction(() => onFormatAction('moveLineUp'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
               <span>Move Line Up</span>
@@ -196,14 +202,10 @@ export const MenuBar: React.FC<MenuBarProps> = ({
             </button>
             <div className="h-px bg-[#383842] my-1" />
             <button onClick={() => triggerAction(() => onFormatAction('cleanWhitespace'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
-              <span>Trim Trailing Spaces</span>
-            </button>
-            <button onClick={() => triggerAction(() => onFormatAction('cleanEmptyLines'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
-              <span>Remove Extra Empty Lines</span>
+              <span>Trim Trailing Whitespace</span>
             </button>
             <button onClick={() => triggerAction(() => onFormatAction('sortLines'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
               <span>Sort Selected Lines (A-Z)</span>
-              <span className="text-[10px] text-[#8e8e99]">F5</span>
             </button>
           </div>
         )}
@@ -232,7 +234,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
             <div className="h-px bg-[#383842] my-1" />
             <button onClick={() => triggerAction(onOpenCommandPalette)} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
               <span>Command Palette...</span>
-              <span className="text-[10px] text-[#8e8e99]">Ctrl+Shift+P</span>
+              <span className="text-[10px] text-[#8e8e99]">Ctrl+P</span>
             </button>
           </div>
         )}
@@ -249,7 +251,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
           View
         </button>
         {activeMenu === 'View' && (
-          <div className="absolute top-6 left-0 min-w-[240px] bg-[#25252b] border border-[#3b3b44] rounded shadow-2xl py-1 z-50 text-[#d4d4dc]">
+          <div className="absolute top-6 left-0 min-w-[250px] bg-[#25252b] border border-[#3b3b44] rounded shadow-2xl py-1 z-50 text-[#d4d4dc]">
             <div className="px-3 py-1 text-[10px] font-semibold text-[#888894] uppercase tracking-wider">Layout Modes</div>
             <button 
               onClick={() => triggerAction(() => onChangeViewMode('split'))} 
@@ -293,12 +295,30 @@ export const MenuBar: React.FC<MenuBarProps> = ({
             </button>
             
             <div className="h-px bg-[#383842] my-1" />
+            <div className="px-3 py-1 text-[10px] font-semibold text-[#888894] uppercase tracking-wider">Font Sizes</div>
             
+            <button 
+              onClick={() => triggerAction(onOpenFontSettings)}
+              className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center text-sky-400 font-medium"
+            >
+              <span>Font Size Settings...</span>
+              <span className="text-[10px] bg-sky-500/20 px-1 rounded text-sky-300">Aa</span>
+            </button>
+
+            {/* Quick adjustments in View menu */}
             <div className="flex justify-between items-center px-3 py-1 text-xs">
-              <span>Font Size ({fontSize}px)</span>
+              <span>Editor Font ({fontSize}px)</span>
               <div className="flex gap-1">
-                <button onClick={() => onChangeFontSize(-1)} className="px-1.5 py-0.5 bg-[#33333d] hover:bg-[#40404c] rounded">-</button>
-                <button onClick={() => onChangeFontSize(1)} className="px-1.5 py-0.5 bg-[#33333d] hover:bg-[#40404c] rounded">+</button>
+                <button onClick={() => onChangeFontSize(-1)} className="px-1.5 py-0.5 bg-[#33333d] hover:bg-[#40404c] rounded text-white">-</button>
+                <button onClick={() => onChangeFontSize(1)} className="px-1.5 py-0.5 bg-[#33333d] hover:bg-[#40404c] rounded text-white">+</button>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center px-3 py-1 text-xs">
+              <span>UI Font ({uiFontSize}px)</span>
+              <div className="flex gap-1">
+                <button onClick={() => onChangeUiFontSize(-1)} className="px-1.5 py-0.5 bg-[#33333d] hover:bg-[#40404c] rounded text-white">-</button>
+                <button onClick={() => onChangeUiFontSize(1)} className="px-1.5 py-0.5 bg-[#33333d] hover:bg-[#40404c] rounded text-white">+</button>
               </div>
             </div>
           </div>
@@ -318,32 +338,20 @@ export const MenuBar: React.FC<MenuBarProps> = ({
         {activeMenu === 'Format' && (
           <div className="absolute top-6 left-0 min-w-[220px] bg-[#25252b] border border-[#3b3b44] rounded shadow-2xl py-1 z-50 text-[#d4d4dc]">
             <button onClick={() => triggerAction(() => onFormatAction('bold'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
-              <span className="font-bold">Bold</span>
-              <span className="text-[10px] text-[#8e8e99]">Ctrl+B</span>
+              <span>Bold</span>
+              <span className="text-[10px] text-[#8e8e99]">**text**</span>
             </button>
             <button onClick={() => triggerAction(() => onFormatAction('italic'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
-              <span className="italic">Italic</span>
-              <span className="text-[10px] text-[#8e8e99]">Ctrl+I</span>
+              <span>Italic</span>
+              <span className="text-[10px] text-[#8e8e99]">*text*</span>
             </button>
             <button onClick={() => triggerAction(() => onFormatAction('strike'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
-              <span className="line-through">Strikethrough</span>
+              <span>Strikethrough</span>
+              <span className="text-[10px] text-[#8e8e99]">~~text~~</span>
             </button>
             <button onClick={() => triggerAction(() => onFormatAction('code'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
               <span>Inline Code</span>
               <span className="text-[10px] text-[#8e8e99]">`code`</span>
-            </button>
-            <div className="h-px bg-[#383842] my-1" />
-            <button onClick={() => triggerAction(() => onFormatAction('h1'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
-              <span className="font-semibold">Heading 1</span>
-              <span className="text-[10px] text-[#8e8e99]">#</span>
-            </button>
-            <button onClick={() => triggerAction(() => onFormatAction('h2'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
-              <span className="font-semibold">Heading 2</span>
-              <span className="text-[10px] text-[#8e8e99]">##</span>
-            </button>
-            <button onClick={() => triggerAction(() => onFormatAction('h3'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
-              <span className="font-semibold">Heading 3</span>
-              <span className="text-[10px] text-[#8e8e99]">###</span>
             </button>
             <div className="h-px bg-[#383842] my-1" />
             <button onClick={() => triggerAction(() => onFormatAction('bulletList'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
@@ -375,62 +383,6 @@ export const MenuBar: React.FC<MenuBarProps> = ({
         )}
       </div>
 
-      {/* AI Agent Menu */}
-      <div className="relative">
-        <button
-          id="menu-ai-agent-btn"
-          onClick={() => handleMenuClick('Agent')}
-          onMouseEnter={() => handleMenuHover('Agent')}
-          className={`px-2 py-0.5 rounded hover:bg-[#33333d] hover:text-white transition-colors flex items-center gap-1 ${activeMenu === 'Agent' ? 'bg-[#33333d] text-white' : ''}`}
-        >
-          <span className="text-sky-400">✨</span>
-          <span>AI Agent</span>
-        </button>
-        {activeMenu === 'Agent' && (
-          <div className="absolute top-6 left-0 min-w-[240px] bg-[#25252b] border border-[#3b3b44] rounded shadow-2xl py-1 z-50 text-[#d4d4dc]">
-            <button
-              onClick={() => triggerAction(() => onToggleAiAgent && onToggleAiAgent())}
-              className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center text-sky-300 font-medium"
-            >
-              <span>Toggle AI Agent Panel</span>
-              <span className="text-[10px] bg-sky-500/20 text-sky-300 px-1 rounded">Ctrl+J</span>
-            </button>
-            <div className="h-px bg-[#383842] my-1" />
-            <div className="px-3 py-1 text-[10px] font-semibold text-[#888894] uppercase tracking-wider">Quick Actions</div>
-            <button
-              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('Please continue writing seamlessly and professionally based on the current Markdown context.'))}
-              className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
-            >
-              <span>✍️ Continue Writing</span>
-            </button>
-            <button
-              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('Please polish this text, improving clarity, flow, and elegance while preserving Markdown structure.'))}
-              className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
-            >
-              <span>✨ Polish & Grammar Fix</span>
-            </button>
-            <button
-              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('Please structure the key data and points from this content into a clean, well-formatted Markdown table.'))}
-              className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
-            >
-              <span>📊 Convert to Markdown Table</span>
-            </button>
-            <button
-              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('Please summarize the core takeaways of this Markdown document into 3-5 concise bullet points.'))}
-              className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
-            >
-              <span>📝 Summarize Document</span>
-            </button>
-            <button
-              onClick={() => triggerAction(() => onAiPromptAction && onAiPromptAction('Please translate the content into professional, natural English while preserving Markdown structure.'))}
-              className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
-            >
-              <span>🌐 Translate to English</span>
-            </button>
-          </div>
-        )}
-      </div>
-
       {/* Preferences Menu */}
       <div className="relative">
         <button
@@ -442,7 +394,19 @@ export const MenuBar: React.FC<MenuBarProps> = ({
           Preferences
         </button>
         {activeMenu === 'Preferences' && (
-          <div className="absolute top-6 left-0 min-w-[220px] bg-[#25252b] border border-[#3b3b44] rounded shadow-2xl py-1 z-50 text-[#d4d4dc]">
+          <div className="absolute top-6 left-0 min-w-[240px] bg-[#25252b] border border-[#3b3b44] rounded shadow-2xl py-1 z-50 text-[#d4d4dc]">
+            <div className="px-3 py-1 text-[10px] font-semibold text-[#888894] uppercase tracking-wider">Typography</div>
+            <button 
+              onClick={() => triggerAction(onOpenFontSettings)}
+              className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center text-amber-400 font-medium"
+            >
+              <span>Font Size Settings...</span>
+              <span className="text-[10px] bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-300">
+                {fontSize} / {uiFontSize}px
+              </span>
+            </button>
+
+            <div className="h-px bg-[#383842] my-1" />
             <div className="px-3 py-1 text-[10px] font-semibold text-[#888894] uppercase tracking-wider">Color Scheme</div>
             <button onClick={() => triggerAction(() => onChangeTheme('sublime-dark'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
               <span>Sublime Monokai Dark</span>
@@ -502,6 +466,9 @@ export const MenuBar: React.FC<MenuBarProps> = ({
             <button onClick={() => triggerAction(onOpenCommandPalette)} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
               <span>Command Palette</span>
               <span className="text-[10px] text-[#8e8e99]">Ctrl+P</span>
+            </button>
+            <button onClick={() => triggerAction(onOpenFontSettings)} className="w-full text-left px-3 py-1 hover:bg-[#383842]">
+              <span>Font Size Settings...</span>
             </button>
             <button onClick={() => triggerAction(() => onFormatAction('insertMarkdownCheatsheet'))} className="w-full text-left px-3 py-1 hover:bg-[#383842]">
               <span>Insert Markdown Cheat Sheet</span>

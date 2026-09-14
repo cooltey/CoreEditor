@@ -1,13 +1,11 @@
 import React from 'react';
-import { Minus, Square, Copy, X, Sparkles } from 'lucide-react';
+import { Minus, Square, Copy, X } from 'lucide-react';
 
 interface TitleBarProps {
   fileName: string;
   isDirty: boolean;
   isMaximized: boolean;
   onToggleMaximize: () => void;
-  isAiAgentOpen?: boolean;
-  onToggleAiAgent?: () => void;
 }
 
 export const TitleBar: React.FC<TitleBarProps> = ({
@@ -15,8 +13,6 @@ export const TitleBar: React.FC<TitleBarProps> = ({
   isDirty,
   isMaximized,
   onToggleMaximize,
-  isAiAgentOpen,
-  onToggleAiAgent,
 }) => {
   const handleMinimize = () => {
     if (window.electronAPI) {
@@ -42,7 +38,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({
       id="app-titlebar"
       onDoubleClick={handleMaximize}
       style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
-      className="h-8 bg-[#1f1f23] border-b border-[#2d2d34] flex items-center justify-between select-none text-xs text-[#a0a0aa] px-2.5 relative z-40 transition-colors"
+      className="h-8 bg-[#1f1f23] border-b border-[#2d2d34] flex items-center justify-between select-none text-xs text-[#a0a0aa] px-2.5 relative z-40 transition-colors shrink-0"
     >
       {/* Left section: App Icon & Brand Name */}
       <div className="flex items-center gap-2" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
@@ -67,24 +63,8 @@ export const TitleBar: React.FC<TitleBarProps> = ({
         )}
       </div>
 
-      {/* Right: AI Agent toggle + Window Controls */}
+      {/* Right: Window Controls */}
       <div className="flex items-center gap-1.5" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
-        {onToggleAiAgent && (
-          <button
-            id="titlebar-ai-agent-btn"
-            onClick={onToggleAiAgent}
-            title="Toggle Core AI Agent (Ctrl+J)"
-            className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[11px] transition-all cursor-pointer ${
-              isAiAgentOpen
-                ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-xs'
-                : 'text-[#a0a0b0] hover:text-white hover:bg-[#282834]'
-            }`}
-          >
-            <Sparkles className="w-3 h-3 text-sky-400" />
-            <span className="font-medium">AI Agent</span>
-          </button>
-        )}
-
         <div className="flex items-center -mr-2.5 h-8">
           <button
             id="win-minimize-btn"

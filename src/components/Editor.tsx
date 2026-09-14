@@ -167,12 +167,15 @@ export const Editor: React.FC<EditorProps> = ({
         <div
           ref={lineNumbersRef}
           id="editor-line-numbers"
-          className={`shrink-0 select-none text-right font-mono py-4 px-2 overflow-hidden border-r text-xs leading-[1.55] transition-colors ${
+          className={`shrink-0 select-none text-right font-mono py-4 px-2 overflow-hidden border-r transition-colors ${
             isLight
               ? 'bg-[#f3f3f5] border-[#e1e4e8] text-[#8c959f]'
               : 'bg-[#18181e] border-[#292934] text-[#5c5c6b]'
           }`}
-          style={{ width: `${Math.max(42, String(lines.length).length * 9 + 20)}px` }}
+          style={{ 
+            width: `${Math.max(42, String(lines.length).length * 10 + 20)}px`,
+            fontSize: `${Math.max(11, Math.round(settings.fontSize * 0.85))}px`,
+          }}
         >
           {lines.map((_, idx) => {
             const lineNum = idx + 1;
@@ -180,6 +183,7 @@ export const Editor: React.FC<EditorProps> = ({
             return (
               <div
                 key={idx}
+                style={{ height: `${settings.fontSize * 1.55}px`, lineHeight: `${settings.fontSize * 1.55}px` }}
                 className={`transition-colors ${
                   isCurrent 
                     ? isLight ? 'text-blue-600 font-bold' : 'text-amber-400 font-semibold' 
@@ -219,6 +223,7 @@ export const Editor: React.FC<EditorProps> = ({
           }`}
           style={{
             fontSize: `${settings.fontSize}px`,
+            lineHeight: `${settings.fontSize * 1.55}px`,
             tabSize: settings.tabSize,
           }}
         />

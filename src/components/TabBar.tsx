@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Plus, X, ChevronDown, Pin, FileText, Check } from 'lucide-react';
+import { Plus, X, ChevronDown, ChevronLeft, ChevronRight, Pin, FileText, Check } from 'lucide-react';
 import { TabItem } from '../types';
 
 interface TabBarProps {
@@ -41,7 +41,19 @@ export const TabBar: React.FC<TabBarProps> = ({
   const [isQuickSwitchOpen, setIsQuickSwitchOpen] = useState(false);
   const [draggedTabId, setDraggedTabId] = useState<string | null>(null);
   const tabListRef = useRef<HTMLDivElement>(null);
+  const activeTabElRef = useRef<HTMLDivElement | null>(null);
   const quickSwitchRef = useRef<HTMLDivElement>(null);
+
+  // Auto scroll active tab into view whenever activeTabId changes
+  useEffect(() => {
+    if (activeTabElRef.current) {
+      activeTabElRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'nearest',
+      });
+    }
+  }, [activeTabId]);
 
   // Close context menu on external click
   useEffect(() => {
@@ -89,29 +101,56 @@ export const TabBar: React.FC<TabBarProps> = ({
     e.preventDefault();
     if (!draggedTabId || draggedTabId === targetId) return;
 
-    const sourceIndex = tabs.findIndex(t => t.id === draggedTabId);
-    const targetIndex = tabs.findIndex(t => t.id === targetId);
+    const sourceIndex = tabs.findIndex((t) => t.id === draggedTabId);
+    const targetIndex = tabs.findIndex((t) => t.id === targetId);
     if (sourceIndex !== -1 && targetIndex !== -1) {
       onReorderTabs(sourceIndex, targetIndex);
     }
     setDraggedTabId(null);
   };
 
+  // Convert mouse wheel to horizontal scroll on Windows
+  const handleTabsWheel = (e: React.WheelEvent) => {
+    if (tabListRef.current) {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        tabListRef.current.scrollLeft += e.deltaY;
+      }
+    }
+  };
+
+  const handleScrollLeft = () => {
+    if (tabListRef.current) {
+      tabListRef.current.scrollBy({ left: -220, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (tabListRef.current) {
+      tabListRef.current.scrollBy({ left: 220, behavior: 'smooth' });
+    }
+  };
+
   return (
     <div 
       id="app-tabbar"
-      className="h-9 bg-[#18181c] border-b border-[#2b2b32] flex items-center select-none relative z-20 overflow-hidden"
+      className="h-9 bg-[#18181c] border-b border-[#2b2b32] flex items-center select-none relative z-20 shrink-0"
     >
       {/* Scrollable Tabs Row */}
       <div 
         ref={tabListRef}
-        className="flex-1 flex items-center h-full overflow-x-auto no-scrollbar scroll-smooth"
+        onWheel={handleTabsWheel}
+        className="flex-1 flex items-center h-full overflow-x-auto scroll-smooth shrink"
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(255, 255, 255, 0.15) transparent',
+        }}
       >
-        {tabs.map((tab, index) => {
+        {tabs.map((tab) => {
           const isActive = tab.id === activeTabId;
           return (
             <div
               key={tab.id}
+              ref={isActive ? activeTabElRef : null}
               draggable
               onDragStart={(e) => handleDragStart(e, tab.id)}
               onDragOver={handleDragOver}
@@ -126,7 +165,7 @@ export const TabBar: React.FC<TabBarProps> = ({
                 }
               }}
               title={`${tab.title}${tab.isDirty ? ' (modified)' : ''} — Right-click for options`}
-              className={`group relative h-full flex items-center gap-1.5 px-3 min-w-[120px] max-w-[210px] text-xs cursor-pointer border-r border-[#26262e] transition-all
+              className={`shrink-0 group relative h-full flex items-center gap-1.5 px-3 min-w-[130px] max-w-[220px] text-xs cursor-pointer border-r border-[#26262e] transition-all
                 ${isActive 
                   ? 'bg-[#1e1e24] text-[#f4f4f5] font-medium border-t-2 border-t-amber-500 shadow-inner' 
                   : 'bg-[#18181c] text-[#8e8e99] hover:bg-[#1f1f26] hover:text-[#d4d4dc]'
@@ -148,7 +187,6 @@ export const TabBar: React.FC<TabBarProps> = ({
               {/* Status / Close Button */}
               <div className="flex items-center justify-center w-4 h-4 shrink-0">
                 {tab.isDirty ? (
-                  // Show dirty dot, but show close on hover
                   <>
                     <span className="w-2 h-2 rounded-full bg-amber-400 group-hover:hidden transition-all" />
                     <button
@@ -180,65 +218,98 @@ export const TabBar: React.FC<TabBarProps> = ({
             </div>
           );
         })}
+      </div>
+
+      {/* Navigation Controls: Scroll Buttons, New Tab (+), and Tab Switcher */}
+      <div className="shrink-0 flex items-center h-full bg-[#18181c] border-l border-[#26262e]">
+        {/* Scroll Left Button */}
+        <button
+          onClick={handleScrollLeft}
+          title="Scroll Tabs Left"
+          className="h-full px-1.5 text-[#7e7e8c] hover:text-white hover:bg-[#24242c] transition-colors flex items-center justify-center"
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+        </button>
+
+        {/* Scroll Right Button */}
+        <button
+          onClick={handleScrollRight}
+          title="Scroll Tabs Right"
+          className="h-full px-1.5 text-[#7e7e8c] hover:text-white hover:bg-[#24242c] transition-colors flex items-center justify-center border-r border-[#26262e]"
+        >
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
 
         {/* Plus Button: Add New Tab */}
         <button
           id="new-tab-plus-btn"
           onClick={onNewTab}
           title="New Tab (Ctrl+N)"
-          className="h-full px-2.5 text-[#8e8e99] hover:text-white hover:bg-[#22222b] transition-colors flex items-center justify-center shrink-0 border-r border-[#26262e]"
+          className="h-full px-2 text-[#8e8e99] hover:text-white hover:bg-[#22222b] transition-colors flex items-center justify-center border-r border-[#26262e]"
         >
           <Plus className="w-3.5 h-3.5" />
         </button>
-      </div>
 
-      {/* Tab Overflow / Quick Switcher Dropdown */}
-      <div className="relative shrink-0 flex items-center h-full px-1 bg-[#18181c]" ref={quickSwitchRef}>
-        <button
-          id="quick-tab-switcher-btn"
-          onClick={() => setIsQuickSwitchOpen(!isQuickSwitchOpen)}
-          title="All Open Tabs"
-          className="h-7 px-2 flex items-center gap-1 text-xs text-[#8e8e99] hover:text-white hover:bg-[#24242c] rounded transition-colors"
-        >
-          <span className="text-[11px]">{tabs.length} tabs</span>
-          <ChevronDown className="w-3 h-3" />
-        </button>
+        {/* Tab Overflow / Quick Switcher Dropdown */}
+        <div className="relative flex items-center h-full px-1" ref={quickSwitchRef}>
+          <button
+            id="quick-tab-switcher-btn"
+            onClick={() => setIsQuickSwitchOpen(!isQuickSwitchOpen)}
+            title="View All Open Tabs"
+            className={`h-7 px-2 flex items-center gap-1 text-xs rounded transition-colors ${
+              isQuickSwitchOpen ? 'bg-[#2a2a34] text-white' : 'text-[#8e8e99] hover:text-white hover:bg-[#24242c]'
+            }`}
+          >
+            <span className="text-[11px] font-mono">{tabs.length} tabs</span>
+            <ChevronDown className={`w-3 h-3 transition-transform ${isQuickSwitchOpen ? 'rotate-180 text-sky-400' : ''}`} />
+          </button>
 
-        {isQuickSwitchOpen && (
-          <div className="absolute right-1 top-8 min-w-[220px] max-h-72 overflow-y-auto bg-[#23232a] border border-[#383842] rounded shadow-2xl py-1 z-50 text-xs">
-            <div className="px-3 py-1.5 text-[10px] text-[#8e8e99] font-medium uppercase tracking-wider border-b border-[#30303a] flex justify-between items-center">
-              <span>Open Tabs</span>
-              <button 
-                onClick={() => {
-                  onCloseAll();
-                  setIsQuickSwitchOpen(false);
-                }} 
-                className="text-rose-400 hover:underline lowercase text-[10px]"
-              >
-                close all
-              </button>
+          {/* High z-index popup menu */}
+          {isQuickSwitchOpen && (
+            <div 
+              className="absolute right-0 top-9 w-64 max-h-80 overflow-y-auto bg-[#23232a] border border-[#3c3c48] rounded-md shadow-2xl py-1 z-50 text-xs animate-in fade-in zoom-in-95 duration-100"
+              style={{
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.65)',
+              }}
+            >
+              <div className="px-3 py-1.5 text-[10px] text-[#8e8e99] font-medium uppercase tracking-wider border-b border-[#30303a] flex justify-between items-center bg-[#1c1c22]">
+                <span>All Open Tabs ({tabs.length})</span>
+                <button 
+                  onClick={() => {
+                    onCloseAll();
+                    setIsQuickSwitchOpen(false);
+                  }} 
+                  className="text-rose-400 hover:underline lowercase text-[10px]"
+                >
+                  close all
+                </button>
+              </div>
+              <div className="divide-y divide-[#2a2a34]">
+                {tabs.map((tab, idx) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      onSelectTab(tab.id);
+                      setIsQuickSwitchOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-[#32323c] transition-colors ${
+                      tab.id === activeTabId ? 'bg-[#2b2b36] text-white font-medium' : 'text-[#c8c8d0]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 truncate pr-2">
+                      <span className="text-[10px] text-[#6b6b78] font-mono w-3.5 shrink-0 text-right">{idx + 1}</span>
+                      <FileText className={`w-3.5 h-3.5 shrink-0 ${tab.title.endsWith('.md') ? 'text-sky-400' : 'text-[#8e8e99]'}`} />
+                      <span className="truncate">{tab.title}</span>
+                      {tab.isDirty && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" title="Unsaved changes" />}
+                      {tab.isPinned && <Pin className="w-2.5 h-2.5 text-amber-400 shrink-0 rotate-45" />}
+                    </div>
+                    {tab.id === activeTabId && <Check className="w-3.5 h-3.5 text-sky-400 shrink-0" />}
+                  </button>
+                ))}
+              </div>
             </div>
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  onSelectTab(tab.id);
-                  setIsQuickSwitchOpen(false);
-                }}
-                className={`w-full text-left px-3 py-1.5 flex items-center justify-between hover:bg-[#32323c] ${
-                  tab.id === activeTabId ? 'bg-[#2b2b34] text-white font-medium' : 'text-[#c8c8d0]'
-                }`}
-              >
-                <div className="flex items-center gap-2 truncate pr-2">
-                  <FileText className="w-3 h-3 text-sky-400 shrink-0" />
-                  <span className="truncate">{tab.title}</span>
-                  {tab.isDirty && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />}
-                </div>
-                {tab.id === activeTabId && <Check className="w-3 h-3 text-sky-400 shrink-0" />}
-              </button>
-            ))}
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Tab Right-Click Context Menu */}

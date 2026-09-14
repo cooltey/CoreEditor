@@ -22,6 +22,8 @@ interface StatusBarProps {
   autoSave: boolean;
   onToggleAutoSave: () => void;
   saveStatus: 'saved' | 'saving' | 'dirty';
+  fontSize?: number;
+  onOpenFontSettings?: () => void;
 }
 
 export const StatusBar: React.FC<StatusBarProps> = ({
@@ -40,6 +42,8 @@ export const StatusBar: React.FC<StatusBarProps> = ({
   autoSave,
   onToggleAutoSave,
   saveStatus,
+  fontSize = 14,
+  onOpenFontSettings,
 }) => {
   const [isSyntaxMenuOpen, setIsSyntaxMenuOpen] = useState(false);
   const syntaxRef = useRef<HTMLDivElement>(null);
@@ -179,6 +183,18 @@ export const StatusBar: React.FC<StatusBarProps> = ({
         <span className="hidden md:inline text-[#7a7a88] cursor-default">
           UTF-8
         </span>
+
+        {/* Font size button */}
+        {onOpenFontSettings && (
+          <button
+            id="status-fontsize-btn"
+            onClick={onOpenFontSettings}
+            title={`Editor font: ${fontSize}px. Click to adjust editor and system UI font sizes.`}
+            className="hover:text-white hover:bg-[#282832] px-1.5 py-0.5 rounded transition-colors text-amber-400/90 font-mono text-[10px]"
+          >
+            {fontSize}px
+          </button>
+        )}
 
         {/* Syntax Mode selector dropdown */}
         <div className="relative" ref={syntaxRef}>

@@ -36,7 +36,9 @@ export interface TabItem {
 }
 
 export interface EditorSettings {
-  fontSize: number;
+  fontSize: number;          // Editor code/text font size (e.g., 10-32px)
+  uiFontSize: number;        // Global system / UI font size (e.g., 11-18px)
+  previewFontSize: number;   // Markdown live preview font size (e.g., 12-24px)
   tabSize: number;
   insertSpaces: boolean;
   wordWrap: boolean;
@@ -64,26 +66,10 @@ export interface FindReplaceState {
 export interface CommandItem {
   id: string;
   title: string;
-  category: 'File' | 'Edit' | 'View' | 'Format' | 'Preferences' | 'Tabs' | 'AI Agent';
+  category: 'File' | 'Edit' | 'View' | 'Format' | 'Preferences' | 'Tabs';
   shortcut?: string;
   keywords?: string[];
   action: () => void;
-}
-
-export interface AiChatMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: number;
-}
-
-export interface AiAgentConfig {
-  provider: 'gemini' | 'custom';
-  customEndpoint: string;
-  customApiKey: string;
-  customModel: string;
-  systemInstruction: string;
-  temperature: number;
 }
 
 declare global {

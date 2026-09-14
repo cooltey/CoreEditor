@@ -23,14 +23,17 @@ import { RenameModal } from './components/RenameModal';
 import { CommandPalette } from './components/CommandPalette';
 import { AboutModal } from './components/AboutModal';
 import { PackageExeModal } from './components/PackageExeModal';
-import { AiAgentSidebar } from './components/AiAgentSidebar';
+import { FontSettingsModal } from './components/FontSettingsModal';
 
 const STORAGE_KEY_TABS = 'coreeditor_tabs_v1';
 const STORAGE_KEY_ACTIVE = 'coreeditor_active_tab_v1';
 const STORAGE_KEY_SETTINGS = 'coreeditor_settings_v1';
+const STORAGE_KEY_LAYOUT = 'coreeditor_layout_v1';
 
 const DEFAULT_SETTINGS: EditorSettings = {
   fontSize: 14,
+  uiFontSize: 13,
+  previewFontSize: 15,
   tabSize: 4,
   insertSpaces: true,
   wordWrap: true,
@@ -76,9 +79,37 @@ export default function App() {
     return DEFAULT_SETTINGS;
   });
 
-  // UI View States
-  const [viewMode, setViewMode] = useState<ViewMode>('split');
-  const [splitRatio, setSplitRatio] = useState(50); // 50% / 50%
+  // UI View & Layout States (Persisted in localStorage)
+  const [splitRatio, setSplitRatio] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_LAYOUT);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed.splitRatio === 'number') {
+          return Math.max(15, Math.min(85, parsed.splitRatio));
+        }
+      }
+    } catch {
+      // fallback
+    }
+    return 50;
+  });
+
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_LAYOUT);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.viewMode === 'split' || parsed.viewMode === 'editor' || parsed.viewMode === 'preview') {
+          return parsed.viewMode;
+        }
+      }
+    } catch {
+      // fallback
+    }
+    return 'split';
+  });
+
   const [isDraggingSplit, setIsDraggingSplit] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
   const [saveToast, setSaveToast] = useState<string | null>(null);
@@ -90,8 +121,7 @@ export default function App() {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isPackageModalOpen, setIsPackageModalOpen] = useState(false);
-  const [isAiAgentOpen, setIsAiAgentOpen] = useState(false);
-  const [selectedText, setSelectedText] = useState('');
+  const [isFontSettingsOpen, setIsFontSettingsOpen] = useState(false);
 
   // Find & Replace
   const [findReplace, setFindReplace] = useState<FindReplaceState>({
@@ -658,54 +688,45 @@ export default function App() {
     }, 50);
   }, [settings.syncScroll, viewMode]);
 
-  // Cursor and text selection tracking
+  // Synchronize layout (splitRatio & viewMode) to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_LAYOUT, JSON.stringify({ splitRatio, viewMode }));
+    } catch (err) {
+      console.error('Failed to save layout:', err);
+    }
+  }, [splitRatio, viewMode]);
+
+  // Cursor tracking
   const handleCursorChange = useCallback((newCursor: CursorPosition) => {
     setCursor(newCursor);
-    if (textareaRef.current) {
-      const { selectionStart, selectionEnd, value } = textareaRef.current;
-      if (selectionStart !== selectionEnd) {
-        setSelectedText(value.substring(selectionStart, selectionEnd));
-      } else {
-        setSelectedText('');
-      }
-    }
   }, []);
 
-  // AI Agent text insertion & replacement
-  const handleInsertTextFromAgent = useCallback((textToInsert: string) => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      const { selectionStart, selectionEnd, value } = textarea;
-      const nextVal = value.substring(0, selectionStart) + textToInsert + value.substring(selectionEnd);
-      handleUpdateContent(nextVal);
-      setTimeout(() => {
-        textarea.focus();
-        textarea.selectionStart = selectionStart + textToInsert.length;
-        textarea.selectionEnd = selectionStart + textToInsert.length;
-      }, 50);
-    } else {
-      handleUpdateContent(activeTab.content + '\n\n' + textToInsert);
-    }
-    setSaveToast('Core AI: Content inserted at cursor');
-  }, [activeTab.content, handleUpdateContent]);
+  // Font adjustments
+  const handleUpdateSettings = useCallback((newSettings: Partial<EditorSettings>) => {
+    setSettings((prev) => ({ ...prev, ...newSettings }));
+  }, []);
 
-  const handleReplaceTextFromAgent = useCallback((replacementText: string) => {
-    const textarea = textareaRef.current;
-    if (textarea && textarea.selectionStart !== textarea.selectionEnd) {
-      const { selectionStart, selectionEnd, value } = textarea;
-      const nextVal = value.substring(0, selectionStart) + replacementText + value.substring(selectionEnd);
-      handleUpdateContent(nextVal);
-      setTimeout(() => {
-        textarea.focus();
-        textarea.selectionStart = selectionStart;
-        textarea.selectionEnd = selectionStart + replacementText.length;
-      }, 50);
-      setSaveToast('Core AI: Selected text replaced');
-    } else {
-      handleUpdateContent(replacementText);
-      setSaveToast('Core AI: Document replaced');
-    }
-  }, [handleUpdateContent]);
+  const handleChangeFontSize = useCallback((delta: number) => {
+    setSettings((s) => ({
+      ...s,
+      fontSize: Math.max(10, Math.min(32, s.fontSize + delta)),
+    }));
+  }, []);
+
+  const handleChangeUiFontSize = useCallback((delta: number) => {
+    setSettings((s) => ({
+      ...s,
+      uiFontSize: Math.max(10, Math.min(18, (s.uiFontSize || 13) + delta)),
+    }));
+  }, []);
+
+  const handleChangePreviewFontSize = useCallback((delta: number) => {
+    setSettings((s) => ({
+      ...s,
+      previewFontSize: Math.max(12, Math.min(24, (s.previewFontSize || 15) + delta)),
+    }));
+  }, []);
 
   // Formatting Engine
   const applyFormatting = useCallback((type: string) => {
@@ -1075,15 +1096,21 @@ export default function App() {
       } else if (mod && !e.shiftKey && e.key.toLowerCase() === 'e') {
         e.preventDefault();
         setViewMode((m) => (m === 'split' ? 'editor' : m === 'editor' ? 'preview' : 'split'));
-      } else if (mod && !e.shiftKey && e.key.toLowerCase() === 'j') {
+      } else if (mod && (e.key === '=' || e.key === '+')) {
         e.preventDefault();
-        setIsAiAgentOpen((prev) => !prev);
+        handleChangeFontSize(1);
+      } else if (mod && e.key === '-') {
+        e.preventDefault();
+        handleChangeFontSize(-1);
+      } else if (mod && e.key === '0') {
+        e.preventDefault();
+        setSettings((s) => ({ ...s, fontSize: 14, uiFontSize: 13, previewFontSize: 15 }));
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeTabId, handleNewTab, handleCloseTab, handleSaveFile, handleExportMarkdown, handleOpenFileClick, applyFormatting]);
+  }, [activeTabId, handleNewTab, handleCloseTab, handleSaveFile, handleExportMarkdown, handleOpenFileClick, applyFormatting, handleChangeFontSize]);
 
   // Split Divider Dragging
   const handleSplitMouseDown = (e: React.MouseEvent) => {
@@ -1289,26 +1316,44 @@ export default function App() {
       action: () => setIsPackageModalOpen(true),
     },
     {
-      id: 'cmd-ai-agent-toggle',
-      title: 'AI Agent: Toggle Core Assistant Panel',
-      category: 'AI Agent',
-      shortcut: 'Ctrl+J',
-      keywords: ['ai', 'agent', 'gemini', 'assistant', 'chat', 'copilot', 'doge'],
-      action: () => setIsAiAgentOpen((prev) => !prev),
+      id: 'cmd-font-settings',
+      title: 'Preferences: Font Size Settings',
+      category: 'Preferences',
+      keywords: ['font', 'size', 'text', 'zoom', 'ui', 'editor', 'typography'],
+      action: () => setIsFontSettingsOpen(true),
     },
     {
-      id: 'cmd-ai-agent-continue',
-      title: 'AI Agent: Continue Writing Markdown',
-      category: 'AI Agent',
-      keywords: ['ai', 'agent', 'continue', 'write', 'draft'],
-      action: () => setIsAiAgentOpen(true),
+      id: 'cmd-font-increase',
+      title: 'Editor: Increase Font Size',
+      category: 'Preferences',
+      shortcut: 'Ctrl+=',
+      action: () => handleChangeFontSize(1),
     },
     {
-      id: 'cmd-ai-agent-polish',
-      title: 'AI Agent: Polish & Proofread',
-      category: 'AI Agent',
-      keywords: ['ai', 'agent', 'polish', 'grammar', 'proofread'],
-      action: () => setIsAiAgentOpen(true),
+      id: 'cmd-font-decrease',
+      title: 'Editor: Decrease Font Size',
+      category: 'Preferences',
+      shortcut: 'Ctrl+-',
+      action: () => handleChangeFontSize(-1),
+    },
+    {
+      id: 'cmd-font-reset',
+      title: 'Editor: Reset Font Sizes to Default',
+      category: 'Preferences',
+      shortcut: 'Ctrl+0',
+      action: () => setSettings((s) => ({ ...s, fontSize: 14, uiFontSize: 13, previewFontSize: 15 })),
+    },
+    {
+      id: 'cmd-ui-font-increase',
+      title: 'UI: Increase System UI Font Size',
+      category: 'Preferences',
+      action: () => handleChangeUiFontSize(1),
+    },
+    {
+      id: 'cmd-ui-font-decrease',
+      title: 'UI: Decrease System UI Font Size',
+      category: 'Preferences',
+      action: () => handleChangeUiFontSize(-1),
     },
   ], [
     handleNewTab, 
@@ -1319,6 +1364,8 @@ export default function App() {
     applyFormatting,
     handleToggleAutoSave,
     settings.autoSave,
+    handleChangeFontSize,
+    handleChangeUiFontSize,
   ]);
 
   // Active theme background style class
@@ -1339,6 +1386,7 @@ export default function App() {
   return (
     <div 
       id="sublimemark-app-root"
+      style={{ fontSize: `${settings.uiFontSize || 13}px` }}
       className={`w-screen h-screen flex flex-col overflow-hidden font-sans select-none ${themeBgClass}`}
     >
       {/* Hidden File Input for Native File Opening */}
@@ -1356,8 +1404,6 @@ export default function App() {
         isDirty={activeTab.isDirty}
         isMaximized={isMaximized}
         onToggleMaximize={() => setIsMaximized(!isMaximized)}
-        isAiAgentOpen={isAiAgentOpen}
-        onToggleAiAgent={() => setIsAiAgentOpen(!isAiAgentOpen)}
       />
 
       {/* 2. Sublime Text Menu Bar */}
@@ -1392,18 +1438,16 @@ export default function App() {
           );
         }}
         fontSize={settings.fontSize}
-        onChangeFontSize={(delta) =>
-          setSettings((s) => ({
-            ...s,
-            fontSize: Math.max(10, Math.min(28, s.fontSize + delta)),
-          }))
-        }
+        onChangeFontSize={handleChangeFontSize}
+        uiFontSize={settings.uiFontSize || 13}
+        onChangeUiFontSize={handleChangeUiFontSize}
+        previewFontSize={settings.previewFontSize || 15}
+        onChangePreviewFontSize={handleChangePreviewFontSize}
+        onOpenFontSettings={() => setIsFontSettingsOpen(true)}
         autoSave={settings.autoSave}
         onToggleAutoSave={handleToggleAutoSave}
         onOpenAbout={() => setIsAboutModalOpen(true)}
         onOpenPackageModal={() => setIsPackageModalOpen(true)}
-        onToggleAiAgent={() => setIsAiAgentOpen(!isAiAgentOpen)}
-        onAiPromptAction={(_prompt) => setIsAiAgentOpen(true)}
       />
 
       {/* 3. Tab Bar with Tab Management */}
@@ -1480,19 +1524,10 @@ export default function App() {
               scrollRef={previewScrollRef}
               onScroll={handlePreviewScroll}
               theme={settings.theme}
+              fontSize={settings.previewFontSize || 15}
             />
           </div>
         )}
-
-        {/* AI Agent Assistant Sidebar */}
-        <AiAgentSidebar
-          isOpen={isAiAgentOpen}
-          onClose={() => setIsAiAgentOpen(false)}
-          editorContent={activeTab.content}
-          selectedText={selectedText}
-          onInsertText={handleInsertTextFromAgent}
-          onReplaceText={handleReplaceTextFromAgent}
-        />
       </div>
 
       {/* 6. Find and Replace Bar (Docked above status bar) */}
@@ -1541,9 +1576,17 @@ export default function App() {
         autoSave={settings.autoSave}
         onToggleAutoSave={handleToggleAutoSave}
         saveStatus={saveStatus}
+        fontSize={settings.fontSize}
+        onOpenFontSettings={() => setIsFontSettingsOpen(true)}
       />
 
       {/* Modals */}
+      <FontSettingsModal
+        isOpen={isFontSettingsOpen}
+        onClose={() => setIsFontSettingsOpen(false)}
+        settings={settings}
+        onUpdateSettings={handleUpdateSettings}
+      />
       <TableModal
         isOpen={isTableModalOpen}
         onClose={() => setIsTableModalOpen(false)}

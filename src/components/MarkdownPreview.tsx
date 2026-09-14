@@ -9,6 +9,7 @@ interface MarkdownPreviewProps {
   scrollRef?: React.RefObject<HTMLDivElement | null>;
   onScroll?: (e: React.UIEvent<HTMLDivElement>) => void;
   theme: string;
+  fontSize?: number;
 }
 
 export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
@@ -17,6 +18,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
   scrollRef,
   onScroll,
   theme,
+  fontSize = 15,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [copiedCodeIdx, setCopiedCodeIdx] = React.useState<number | null>(null);
@@ -126,6 +128,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
       <div
         id="rendered-markdown-body"
         onClick={handleCheckboxClick}
+        style={{ fontSize: `${fontSize}px` }}
         className={`markdown-body ${isLight ? 'light-markdown' : 'dark-markdown'}`}
         dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
       />

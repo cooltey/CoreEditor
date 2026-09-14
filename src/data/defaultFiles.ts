@@ -12,15 +12,16 @@ export const DEFAULT_TABS: TabItem[] = [
     updatedAt: Date.now() - 10000,
     originalContent: `# CoreEditor 🐕🎯
 
-A modern, high-performance Markdown & Text Editor with **AI Agent Assistance**, rich formatting tools, and **real-time synchronized live preview**.
+A modern, high-performance Markdown & Text Editor with customizable typography, rich formatting tools, and **real-time synchronized live preview**.
 
 ---
 
 ## ⚡ Core Capabilities
 
-- **🐕 Core AI Agent (Ctrl+J)**: Integrated intelligent assistant for continuation, proofreading, Markdown tables, and translation (supports built-in Gemini or custom Ollama / OpenAI-compatible endpoints).
+- **Real-time Synchronized Preview**: Instant split-view Markdown rendering with GFM syntax, checklists, and code formatting.
+- **Flexible Typography Control**: Independent font size settings for editor, system UI, and live preview.
 - **Desktop Experience**: Windows 11 Fluent layout with full Tab Management & Auto Save.
-- **Side-by-Side Split View**: Edit on the left, instant live rendering on the right.
+- **Side-by-Side Split View**: Edit on the left, instant live rendering on the right with persistent split ratios.
 - **Enhanced Formatting Bar**: Insert tables, headers, lists, quotes, adjust casing, and clean up whitespace with one click.
 - **Minimap & Navigation**: Sublime-style interactive code minimap and line numbers.
 - **Windows .exe Packaging**: One-click build script \`build-windows-exe.bat\` for portable desktop executable.
@@ -30,11 +31,11 @@ A modern, high-performance Markdown & Text Editor with **AI Agent Assistance**, 
 ## 📋 Task Checklist
 
 - [x] Renamed to CoreEditor with Doge Bullseye Target icon
-- [x] Core AI Agent integration (Ctrl+J)
 - [x] Real-time synchronized Markdown live preview
+- [x] Independent Font Size settings for Editor, UI, and Preview
 - [x] Debounced Auto-Save with status indicator
 - [x] Windows Portable .exe build configuration
-- [ ] Try asking Core AI Agent to write or summarize your notes!
+- [ ] Try writing and exporting your notes!
 
 ---
 
@@ -42,24 +43,25 @@ A modern, high-performance Markdown & Text Editor with **AI Agent Assistance**, 
 
 | Command | Shortcut | Description |
 | :--- | :--- | :--- |
-| **AI Agent** | \`Ctrl + J\` | Open intelligent writing assistant |
 | **Command Palette** | \`Ctrl + P\` | Quick actions & file switcher |
+| **Font Zoom** | \`Ctrl + = / -\` | Increase or decrease editor font size |
+| **Toggle Preview** | \`Ctrl + E\` | Switch between Split, Editor, or Preview |
 | **New Tab** | \`Ctrl + N\` | Creates an empty scratchpad tab |
 | **Save File** | \`Ctrl + S\` | Manual save (Auto-save is on by default) |
 | **Find & Replace** | \`Ctrl + F\` / \`Ctrl + H\` | Full regex search across document |
-| **Toggle Preview** | \`Ctrl + E\` | Switch between Split, Editor, or Preview |
 `,
     content: `# CoreEditor 🐕🎯
 
-A modern, high-performance Markdown & Text Editor with **AI Agent Assistance**, rich formatting tools, and **real-time synchronized live preview**.
+A modern, high-performance Markdown & Text Editor with customizable typography, rich formatting tools, and **real-time synchronized live preview**.
 
 ---
 
 ## ⚡ Core Capabilities
 
-- **🐕 Core AI Agent (Ctrl+J)**: Integrated intelligent assistant for continuation, proofreading, Markdown tables, and translation (supports built-in Gemini or custom Ollama / OpenAI-compatible endpoints).
+- **Real-time Synchronized Preview**: Instant split-view Markdown rendering with GFM syntax, checklists, and code formatting.
+- **Flexible Typography Control**: Independent font size settings for editor, system UI, and live preview.
 - **Desktop Experience**: Windows 11 Fluent layout with full Tab Management & Auto Save.
-- **Side-by-Side Split View**: Edit on the left, instant live rendering on the right.
+- **Side-by-Side Split View**: Edit on the left, instant live rendering on the right with persistent split ratios.
 - **Enhanced Formatting Bar**: Insert tables, headers, lists, quotes, adjust casing, and clean up whitespace with one click.
 - **Minimap & Navigation**: Sublime-style interactive code minimap and line numbers.
 - **Windows .exe Packaging**: One-click build script \`build-windows-exe.bat\` for portable desktop executable.
@@ -69,11 +71,11 @@ A modern, high-performance Markdown & Text Editor with **AI Agent Assistance**, 
 ## 📋 Task Checklist
 
 - [x] Renamed to CoreEditor with Doge Bullseye Target icon
-- [x] Core AI Agent integration (Ctrl+J)
 - [x] Real-time synchronized Markdown live preview
+- [x] Independent Font Size settings for Editor, UI, and Preview
 - [x] Debounced Auto-Save with status indicator
 - [x] Windows Portable .exe build configuration
-- [ ] Try asking Core AI Agent to write or summarize your notes!
+- [ ] Try writing and exporting your notes!
 
 ---
 
@@ -81,12 +83,12 @@ A modern, high-performance Markdown & Text Editor with **AI Agent Assistance**, 
 
 | Command | Shortcut | Description |
 | :--- | :--- | :--- |
-| **AI Agent** | \`Ctrl + J\` | Open intelligent writing assistant |
 | **Command Palette** | \`Ctrl + P\` | Quick actions & file switcher |
+| **Font Zoom** | \`Ctrl + = / -\` | Increase or decrease editor font size |
+| **Toggle Preview** | \`Ctrl + E\` | Switch between Split, Editor, or Preview |
 | **New Tab** | \`Ctrl + N\` | Creates an empty scratchpad tab |
 | **Save File** | \`Ctrl + S\` | Manual save (Auto-save is on by default) |
 | **Find & Replace** | \`Ctrl + F\` / \`Ctrl + H\` | Full regex search across document |
-| **Toggle Preview** | \`Ctrl + E\` | Switch between Split, Editor, or Preview |
 `,
   },
   {
