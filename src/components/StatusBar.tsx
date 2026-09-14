@@ -4,7 +4,7 @@ import {
   SyntaxMode, 
   ViewMode 
 } from '../types';
-import { Columns2, FileCode2, Eye, ChevronUp } from 'lucide-react';
+import { Columns2, FileCode2, Eye, ChevronUp, CheckCircle2, AlertTriangle, SpellCheck } from 'lucide-react';
 
 interface StatusBarProps {
   cursor: CursorPosition;
@@ -24,6 +24,9 @@ interface StatusBarProps {
   saveStatus: 'saved' | 'saving' | 'dirty';
   fontSize?: number;
   onOpenFontSettings?: () => void;
+  grammarIssuesCount?: number;
+  onOpenGrammarModal?: () => void;
+  grammarCheckEnabled?: boolean;
 }
 
 export const StatusBar: React.FC<StatusBarProps> = ({
@@ -44,6 +47,9 @@ export const StatusBar: React.FC<StatusBarProps> = ({
   saveStatus,
   fontSize = 14,
   onOpenFontSettings,
+  grammarIssuesCount = 0,
+  onOpenGrammarModal,
+  grammarCheckEnabled = true,
 }) => {
   const [isSyntaxMenuOpen, setIsSyntaxMenuOpen] = useState(false);
   const syntaxRef = useRef<HTMLDivElement>(null);
@@ -183,6 +189,43 @@ export const StatusBar: React.FC<StatusBarProps> = ({
         <span className="hidden md:inline text-[#7a7a88] cursor-default">
           UTF-8
         </span>
+
+        {/* English Grammar & Spell Check Indicator */}
+        {onOpenGrammarModal && (
+          grammarCheckEnabled ? (
+            grammarIssuesCount === 0 ? (
+              <button
+                id="status-grammar-btn"
+                onClick={onOpenGrammarModal}
+                title="English Grammar: All clear! Click for settings or inspection."
+                className="flex items-center gap-1 hover:text-emerald-300 text-emerald-400/90 hover:bg-emerald-500/10 px-1.5 py-0.5 rounded transition-colors text-[10px]"
+              >
+                <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                <span className="hidden sm:inline">Grammar OK</span>
+              </button>
+            ) : (
+              <button
+                id="status-grammar-btn"
+                onClick={onOpenGrammarModal}
+                title={`English Grammar: ${grammarIssuesCount} hint(s) found. Click to review and fix.`}
+                className="flex items-center gap-1 bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 px-1.5 py-0.5 rounded transition-colors text-[10px] font-medium"
+              >
+                <AlertTriangle className="w-3 h-3" />
+                <span>{grammarIssuesCount} Grammar {grammarIssuesCount === 1 ? 'hint' : 'hints'}</span>
+              </button>
+            )
+          ) : (
+            <button
+              id="status-grammar-btn"
+              onClick={onOpenGrammarModal}
+              title="Grammar inspection is paused. Click to configure."
+              className="flex items-center gap-1 text-[#787888] hover:text-[#b0b0c0] hover:bg-[#282832] px-1.5 py-0.5 rounded transition-colors text-[10px]"
+            >
+              <SpellCheck className="w-3 h-3" />
+              <span className="hidden sm:inline">Grammar Off</span>
+            </button>
+          )
+        )}
 
         {/* Font size button */}
         {onOpenFontSettings && (

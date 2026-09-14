@@ -49,6 +49,20 @@ export interface EditorSettings {
   theme: EditorTheme;
   platformStyle: PlatformStyle;
   autoSave: boolean;
+  spellCheck: boolean;
+  grammarCheck: boolean;
+}
+
+export interface GrammarIssue {
+  id: string;
+  message: string;
+  category: 'grammar' | 'spelling' | 'style' | 'punctuation' | 'redundancy';
+  index: number;
+  length: number;
+  line: number;
+  column: number;
+  matchedText: string;
+  replacements: string[];
 }
 
 export interface FindReplaceState {

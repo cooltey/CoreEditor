@@ -38,6 +38,11 @@ interface MenuBarProps {
   onToggleAutoSave: () => void;
   onOpenAbout: () => void;
   onOpenPackageModal: () => void;
+  onOpenGrammarModal?: () => void;
+  spellCheck?: boolean;
+  onToggleSpellCheck?: () => void;
+  grammarCheck?: boolean;
+  onToggleGrammarCheck?: () => void;
 }
 
 export const MenuBar: React.FC<MenuBarProps> = ({
@@ -77,6 +82,11 @@ export const MenuBar: React.FC<MenuBarProps> = ({
   onToggleAutoSave,
   onOpenAbout,
   onOpenPackageModal,
+  onOpenGrammarModal,
+  spellCheck = true,
+  onToggleSpellCheck,
+  grammarCheck = true,
+  onToggleGrammarCheck,
 }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const menuBarRef = useRef<HTMLDivElement>(null);
@@ -378,6 +388,57 @@ export const MenuBar: React.FC<MenuBarProps> = ({
             </button>
             <button onClick={() => triggerAction(() => onFormatAction('titlecase'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
               <span>Transform: Title Case</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Tools Menu */}
+      <div className="relative">
+        <button
+          id="menu-tools-btn"
+          onClick={() => handleMenuClick('Tools')}
+          onMouseEnter={() => handleMenuHover('Tools')}
+          className={`px-2 py-0.5 rounded hover:bg-[#33333d] hover:text-white transition-colors ${activeMenu === 'Tools' ? 'bg-[#33333d] text-white' : ''}`}
+        >
+          Tools
+        </button>
+        {activeMenu === 'Tools' && (
+          <div className="absolute top-6 left-0 min-w-[240px] bg-[#25252b] border border-[#3b3b44] rounded shadow-2xl py-1 z-50 text-[#d4d4dc]">
+            <div className="px-3 py-1 text-[10px] font-semibold text-[#888894] uppercase tracking-wider">Grammar & Spelling</div>
+            {onOpenGrammarModal && (
+              <button
+                onClick={() => triggerAction(onOpenGrammarModal)}
+                className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center text-sky-400 font-medium"
+              >
+                <span>English Grammar & Spell Check...</span>
+                <span className="text-[10px] bg-sky-500/20 px-1.5 py-0.5 rounded text-sky-300">Offline</span>
+              </button>
+            )}
+            {onToggleSpellCheck && (
+              <button
+                onClick={() => triggerAction(onToggleSpellCheck)}
+                className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
+              >
+                <span>Browser Native Spell Check</span>
+                {spellCheck && <span className="text-sky-400">✓</span>}
+              </button>
+            )}
+            {onToggleGrammarCheck && (
+              <button
+                onClick={() => triggerAction(onToggleGrammarCheck)}
+                className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
+              >
+                <span>Grammar & Style Hints</span>
+                {grammarCheck && <span className="text-sky-400">✓</span>}
+              </button>
+            )}
+            <div className="h-px bg-[#383842] my-1" />
+            <button
+              onClick={() => triggerAction(onOpenFontSettings)}
+              className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
+            >
+              <span>Font Size Settings...</span>
             </button>
           </div>
         )}

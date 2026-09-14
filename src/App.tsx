@@ -7,7 +7,8 @@ import {
   CursorPosition, 
   CommandItem, 
   SyntaxMode,
-  EditorTheme
+  EditorTheme,
+  GrammarIssue
 } from './types';
 import { DEFAULT_TABS } from './data/defaultFiles';
 import { TitleBar } from './components/TitleBar';
@@ -24,6 +25,8 @@ import { CommandPalette } from './components/CommandPalette';
 import { AboutModal } from './components/AboutModal';
 import { PackageExeModal } from './components/PackageExeModal';
 import { FontSettingsModal } from './components/FontSettingsModal';
+import { GrammarModal } from './components/GrammarModal';
+import { checkGrammar } from './utils/grammarChecker';
 
 const STORAGE_KEY_TABS = 'coreeditor_tabs_v1';
 const STORAGE_KEY_ACTIVE = 'coreeditor_active_tab_v1';
@@ -44,6 +47,8 @@ const DEFAULT_SETTINGS: EditorSettings = {
   theme: 'sublime-dark',
   platformStyle: 'windows',
   autoSave: true,
+  spellCheck: true,
+  grammarCheck: true,
 };
 
 export default function App() {
@@ -122,6 +127,7 @@ export default function App() {
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isPackageModalOpen, setIsPackageModalOpen] = useState(false);
   const [isFontSettingsOpen, setIsFontSettingsOpen] = useState(false);
+  const [isGrammarModalOpen, setIsGrammarModalOpen] = useState(false);
 
   // Find & Replace
   const [findReplace, setFindReplace] = useState<FindReplaceState>({
@@ -314,6 +320,49 @@ export default function App() {
       }
     };
   }, []);
+
+  // Offline Real-time Grammar & Spelling analysis
+  const grammarIssues = useMemo(() => {
+    if (!settings.grammarCheck) return [];
+    if (activeTab.syntax !== 'Markdown' && activeTab.syntax !== 'Plain Text') {
+      return [];
+    }
+    return checkGrammar(activeTab.content);
+  }, [activeTab.content, activeTab.syntax, settings.grammarCheck]);
+
+  // Apply single grammar fix
+  const handleApplyGrammarFix = useCallback((issue: GrammarIssue, replacement: string) => {
+    const current = activeTab.content;
+    const before = current.slice(0, issue.index);
+    const after = current.slice(issue.index + issue.length);
+    handleUpdateContent(before + replacement + after);
+  }, [activeTab.content, handleUpdateContent]);
+
+  // Apply all fixes in reverse order to preserve string positions
+  const handleApplyAllGrammarFixes = useCallback((issuesToFix: GrammarIssue[]) => {
+    let current = activeTab.content;
+    const sorted = [...issuesToFix].sort((a, b) => b.index - a.index);
+    for (const issue of sorted) {
+      if (issue.replacements.length > 0) {
+        const rep = issue.replacements[0];
+        const before = current.slice(0, issue.index);
+        const after = current.slice(issue.index + issue.length);
+        current = before + rep + after;
+      }
+    }
+    handleUpdateContent(current);
+  }, [activeTab.content, handleUpdateContent]);
+
+  // Jump to issue location inside editor textarea
+  const handleLocateGrammarIssue = useCallback((issue: GrammarIssue) => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(issue.index, issue.index + issue.length);
+      const lineHeight = settings.fontSize * 1.55;
+      textareaRef.current.scrollTop = Math.max(0, (issue.line - 3) * lineHeight);
+    }
+    setIsGrammarModalOpen(false);
+  }, [settings.fontSize]);
 
   // Switch Active Tab with pending save flush
   const handleSelectTab = useCallback((tabId: string) => {
@@ -1355,6 +1404,28 @@ export default function App() {
       category: 'Preferences',
       action: () => handleChangeUiFontSize(-1),
     },
+    {
+      id: 'cmd-grammar-check',
+      title: 'Tools: English Grammar & Spell Check',
+      category: 'Preferences',
+      shortcut: 'Grammar',
+      keywords: ['grammar', 'spell', 'spelling', 'check', 'english', 'typo'],
+      action: () => setIsGrammarModalOpen(true),
+    },
+    {
+      id: 'cmd-toggle-spellcheck',
+      title: `Tools: Toggle Native Spell Check (Currently: ${settings.spellCheck ? 'ON' : 'OFF'})`,
+      category: 'Preferences',
+      keywords: ['spell', 'red line', 'browser', 'spelling'],
+      action: () => setSettings((s) => ({ ...s, spellCheck: !s.spellCheck })),
+    },
+    {
+      id: 'cmd-toggle-grammar-rules',
+      title: `Tools: Toggle Grammar & Style Rules (Currently: ${settings.grammarCheck ? 'ON' : 'OFF'})`,
+      category: 'Preferences',
+      keywords: ['grammar', 'style', 'rules'],
+      action: () => setSettings((s) => ({ ...s, grammarCheck: !s.grammarCheck })),
+    },
   ], [
     handleNewTab, 
     handleOpenFileClick, 
@@ -1448,6 +1519,11 @@ export default function App() {
         onToggleAutoSave={handleToggleAutoSave}
         onOpenAbout={() => setIsAboutModalOpen(true)}
         onOpenPackageModal={() => setIsPackageModalOpen(true)}
+        onOpenGrammarModal={() => setIsGrammarModalOpen(true)}
+        spellCheck={settings.spellCheck}
+        onToggleSpellCheck={() => setSettings((s) => ({ ...s, spellCheck: !s.spellCheck }))}
+        grammarCheck={settings.grammarCheck}
+        onToggleGrammarCheck={() => setSettings((s) => ({ ...s, grammarCheck: !s.grammarCheck }))}
       />
 
       {/* 3. Tab Bar with Tab Management */}
@@ -1578,6 +1654,9 @@ export default function App() {
         saveStatus={saveStatus}
         fontSize={settings.fontSize}
         onOpenFontSettings={() => setIsFontSettingsOpen(true)}
+        grammarIssuesCount={grammarIssues.length}
+        onOpenGrammarModal={() => setIsGrammarModalOpen(true)}
+        grammarCheckEnabled={settings.grammarCheck}
       />
 
       {/* Modals */}
@@ -1634,6 +1713,19 @@ export default function App() {
       <PackageExeModal
         isOpen={isPackageModalOpen}
         onClose={() => setIsPackageModalOpen(false)}
+      />
+
+      <GrammarModal
+        isOpen={isGrammarModalOpen}
+        onClose={() => setIsGrammarModalOpen(false)}
+        issues={grammarIssues}
+        onApplyFix={handleApplyGrammarFix}
+        onApplyAllFixes={handleApplyAllGrammarFixes}
+        onLocateIssue={handleLocateGrammarIssue}
+        nativeSpellCheck={settings.spellCheck}
+        onToggleNativeSpellCheck={() => setSettings((s) => ({ ...s, spellCheck: !s.spellCheck }))}
+        grammarCheckEnabled={settings.grammarCheck}
+        onToggleGrammarCheck={() => setSettings((s) => ({ ...s, grammarCheck: !s.grammarCheck }))}
       />
 
       {/* Save Notification Toast */}
