@@ -22,8 +22,8 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#30303b] bg-[#1e1e24]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg overflow-hidden shrink-0 border border-[#404254] shadow-md bg-[#1a1b22] p-0.5">
-              <AppLogo className="w-full h-full object-cover rounded-md" />
+            <div className="w-10 h-10 shrink-0 flex items-center justify-center drop-shadow-md">
+              <AppLogo className="w-full h-full" />
             </div>
             <div>
               <div className="font-semibold text-white text-sm flex items-center gap-1.5">
