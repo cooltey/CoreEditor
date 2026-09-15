@@ -218,6 +218,14 @@ export const TabBar: React.FC<TabBarProps> = ({
             </div>
           );
         })}
+
+        {/* Blank area inside tab row: Click to create new tab */}
+        <div
+          id="tab-bar-blank-area"
+          onClick={onNewTab}
+          className="flex-1 h-full min-w-[50px] cursor-pointer"
+          title="Click to open a new tab"
+        />
       </div>
 
       {/* Navigation Controls: Scroll Buttons, New Tab (+), and Tab Switcher */}

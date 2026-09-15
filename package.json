@@ -61,9 +61,11 @@
     },
     "files": [
       "dist/**/*",
-      "electron/**/*"
+      "electron/**/*",
+      "public/**/*"
     ],
     "win": {
+      "icon": "public/doge-target-icon.svg",
       "target": [
         {
           "target": "nsis",

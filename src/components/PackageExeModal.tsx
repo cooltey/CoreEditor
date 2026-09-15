@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Check, Copy, Monitor, Package, Terminal, FolderOpen, ArrowRight } from 'lucide-react';
+import { AppLogo } from './AppLogo';
 
 interface PackageExeModalProps {
   isOpen: boolean;
@@ -30,7 +31,7 @@ export const PackageExeModal: React.FC<PackageExeModalProps> = ({ isOpen, onClos
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#30303b] bg-[#1e1e24]">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 border border-red-500/50 shadow flex items-center justify-center bg-red-950/40">
-              <img src="/doge-target-icon.svg" alt="" className="w-full h-full object-cover" />
+              <AppLogo className="w-full h-full object-cover" />
             </div>
             <div>
               <div className="font-semibold text-white text-sm">Package CoreEditor as Windows Executable (.exe)</div>

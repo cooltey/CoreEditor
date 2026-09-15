@@ -1,0 +1,136 @@
+import React from 'react';
+
+interface AppLogoProps {
+  className?: string;
+  size?: number | string;
+}
+
+export const AppLogo: React.FC<AppLogoProps> = ({ className = 'w-full h-full', size }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      width={size}
+      height={size}
+      className={className}
+      style={{ display: 'block' }}
+    >
+      <defs>
+        {/* Background / Target Gradients */}
+        <radialGradient id="targetRed" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ff334b" />
+          <stop offset="100%" stopColor="#c8142d" />
+        </radialGradient>
+        <radialGradient id="targetInnerRed" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ff4757" />
+          <stop offset="100%" stopColor="#b80c22" />
+        </radialGradient>
+        {/* Doge Coat Gradients */}
+        <linearGradient id="dogeCoat" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#f8ba52" />
+          <stop offset="50%" stopColor="#e29b32" />
+          <stop offset="100%" stopColor="#c97d1b" />
+        </linearGradient>
+        <linearGradient id="earInner" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#ffa6b4" />
+          <stop offset="100%" stopColor="#e87386" />
+        </linearGradient>
+        {/* Drop Shadow Filter */}
+        <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+          <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#000000" floodOpacity="0.35" />
+        </filter>
+        <filter id="dogeGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#000000" floodOpacity="0.25" />
+        </filter>
+      </defs>
+
+      {/* Base App Background (Rounded squircle container) */}
+      <rect width="512" height="512" rx="112" fill="#1b1b22" />
+      <rect width="500" height="500" x="6" y="6" rx="106" fill="none" stroke="#2e2e3a" strokeWidth="3" />
+
+      {/* RED TARGET / BULLSEYE RINGS */}
+      <g filter="url(#shadow)">
+        {/* Ring 1: Outer Red Band */}
+        <circle cx="256" cy="256" r="216" fill="url(#targetRed)" />
+        {/* Ring 2: White/Cream Band */}
+        <circle cx="256" cy="256" r="172" fill="#f8f9fc" stroke="#e2e5eb" strokeWidth="2" />
+        {/* Ring 3: Middle Red Band */}
+        <circle cx="256" cy="256" r="128" fill="url(#targetInnerRed)" />
+        {/* Ring 4: Center Target Bullseye (Light core) */}
+        <circle cx="256" cy="256" r="84" fill="#ffffff" />
+      </g>
+
+      {/* Crosshair Guides / Sight Ticks */}
+      <g stroke="#ffffff" strokeWidth="6" strokeLinecap="round" opacity="0.9">
+        <line x1="256" y1="28" x2="256" y2="54" />
+        <line x1="256" y1="458" x2="256" y2="484" />
+        <line x1="28" y1="256" x2="54" y2="256" />
+        <line x1="458" y1="256" x2="484" y2="256" />
+      </g>
+      <g stroke="#c8142d" strokeWidth="3" strokeLinecap="round" opacity="0.8">
+        <line x1="256" y1="92" x2="256" y2="114" />
+        <line x1="256" y1="398" x2="256" y2="420" />
+        <line x1="92" y1="256" x2="114" y2="256" />
+        <line x1="398" y1="256" x2="420" y2="256" />
+      </g>
+
+      {/* DOGE IN THE EXACT CENTER */}
+      <g id="doge-center" filter="url(#dogeGlow)">
+        {/* Left Ear */}
+        <path d="M 194 186 L 168 116 C 166 111, 172 106, 178 109 L 222 138 Z" fill="#cf821e" />
+        <path d="M 190 180 L 174 124 C 172 120, 176 117, 180 119 L 214 142 Z" fill="url(#earInner)" />
+
+        {/* Right Ear */}
+        <path d="M 318 186 L 344 116 C 346 111, 340 106, 334 109 L 290 138 Z" fill="#cf821e" />
+        <path d="M 322 180 L 338 124 C 340 120, 336 117, 332 119 L 298 142 Z" fill="url(#earInner)" />
+
+        {/* Doge Head Base (Golden Shiba) */}
+        <ellipse cx="256" cy="256" rx="78" ry="72" fill="url(#dogeCoat)" />
+
+        {/* Cheek Fluffs (Left & Right) */}
+        <path d="M 180 252 C 172 264, 176 284, 194 294 C 188 280, 192 266, 198 256 Z" fill="#e29b32" />
+        <path d="M 332 252 C 340 264, 336 284, 318 294 C 324 280, 320 266, 314 256 Z" fill="#e29b32" />
+
+        {/* White Muzzle & Cheek Fur Base (Urajiro) */}
+        <path d="M 210 262 C 206 298, 226 318, 256 318 C 286 318, 306 298, 302 262 C 292 248, 280 242, 256 242 C 232 242, 220 248, 210 262 Z" fill="#fffdfa" />
+
+        {/* Shiba Eyebrow White Dots */}
+        <ellipse cx="224" cy="214" rx="7" ry="5" fill="#fffdfa" transform="rotate(-10 224 214)" />
+        <ellipse cx="288" cy="214" rx="7" ry="5" fill="#fffdfa" transform="rotate(10 288 214)" />
+
+        {/* Doge Eyes */}
+        <ellipse cx="220" cy="232" rx="7" ry="8.5" fill="#241408" transform="rotate(6 220 232)" />
+        <circle cx="218" cy="230" r="2.6" fill="#ffffff" />
+        <circle cx="222" cy="234" r="1.1" fill="#ffffff" opacity="0.7" />
+
+        <ellipse cx="292" cy="232" rx="7" ry="8.5" fill="#241408" transform="rotate(-6 292 232)" />
+        <circle cx="290" cy="230" r="2.6" fill="#ffffff" />
+        <circle cx="294" cy="234" r="1.1" fill="#ffffff" opacity="0.7" />
+
+        {/* Dark Shiba Nose */}
+        <path d="M 249 266 C 248 263, 253 260, 256 260 C 259 260, 264 263, 263 266 C 262 271, 258 274, 256 274 C 254 274, 250 271, 249 266 Z" fill="#1b1818" />
+        <ellipse cx="254" cy="263" rx="2" ry="1.2" fill="#ffffff" opacity="0.5" />
+
+        {/* Smiling Doge Mouth (w shape) */}
+        <path
+          d="M 256 274 L 256 280 M 256 280 C 251 285, 244 284, 240 281 M 256 280 C 261 285, 268 284, 272 281" 
+          stroke="#3d2616"
+          strokeWidth="2.6"
+          strokeLinecap="round"
+          fill="none"
+        />
+
+        {/* Blush under eyes */}
+        <ellipse cx="204" cy="256" rx="9" ry="5" fill="#ff7675" opacity="0.32" />
+        <ellipse cx="308" cy="256" rx="9" ry="5" fill="#ff7675" opacity="0.32" />
+      </g>
+
+      {/* Outer Glass Glint */}
+      <path
+        d="M 12 112 C 12 56, 56 12, 112 12 L 400 12 C 430 12, 456 24, 474 44 C 362 82, 212 178, 128 320 C 52 254, 12 186, 12 112 Z" 
+        fill="#ffffff"
+        opacity="0.04"
+      />
+    </svg>
+  );
+};

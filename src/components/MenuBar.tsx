@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ViewMode, EditorTheme, SyntaxMode } from '../types';
+import { AppLogo } from './AppLogo';
 
 interface MenuBarProps {
   onNewTab: () => void;
@@ -541,7 +542,9 @@ export const MenuBar: React.FC<MenuBarProps> = ({
             <div className="h-px bg-[#383842] my-1" />
             <button onClick={() => triggerAction(onOpenAbout)} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex items-center justify-between">
               <span>About CoreEditor...</span>
-              <img src="/doge-target-icon.svg" alt="" className="w-3.5 h-3.5 rounded-full" />
+              <div className="w-3.5 h-3.5 rounded-full overflow-hidden shrink-0">
+                <AppLogo className="w-full h-full" />
+              </div>
             </button>
           </div>
         )}

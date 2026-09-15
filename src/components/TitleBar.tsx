@@ -1,5 +1,6 @@
 import React from 'react';
 import { Minus, Square, Copy, X } from 'lucide-react';
+import { AppLogo } from './AppLogo';
 
 interface TitleBarProps {
   fileName: string;
@@ -44,12 +45,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({
       <div className="flex items-center gap-2" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-full overflow-hidden shrink-0 border border-red-500/50 shadow-xs flex items-center justify-center bg-red-950/40">
-            <img
-              src="/doge-target-icon.svg"
-              alt="CoreEditor Doge Target Icon"
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
+            <AppLogo className="w-full h-full object-cover" />
           </div>
           <span className="text-[#f1f1f5] font-semibold text-xs tracking-wide">CoreEditor</span>
         </div>

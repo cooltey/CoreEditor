@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Keyboard, User, Mail, ExternalLink, Github } from 'lucide-react';
+import { AppLogo } from './AppLogo';
 
 interface AboutModalProps {
   isOpen: boolean;
@@ -22,12 +23,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#30303b] bg-[#1e1e24]">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-red-500/50 shadow-md bg-red-950/40 p-0.5">
-              <img
-                src="/doge-target-icon.svg"
-                alt="CoreEditor Icon"
-                className="w-full h-full object-cover rounded-md"
-                referrerPolicy="no-referrer"
-              />
+              <AppLogo className="w-full h-full object-cover rounded-md" />
             </div>
             <div>
               <div className="font-semibold text-white text-sm flex items-center gap-1.5">

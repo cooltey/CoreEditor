@@ -1570,6 +1570,9 @@ export default function App() {
               textareaRef={textareaRef}
               scrollRef={editorScrollRef}
               onScroll={handleEditorScroll}
+              grammarIssues={grammarIssues}
+              onApplyGrammarFix={handleApplyGrammarFix}
+              onOpenGrammarModal={() => setIsGrammarModalOpen(true)}
             />
           </div>
         )}

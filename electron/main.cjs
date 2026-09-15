@@ -1,5 +1,20 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
+const fs = require('fs');
+
+// Resolve app icon across both dev and packaged production builds
+function getAppIconPath() {
+  const candidates = [
+    path.join(__dirname, '../dist/doge-target-icon.svg'),
+    path.join(__dirname, '../public/doge-target-icon.svg'),
+    path.join(__dirname, '../dist/favicon.svg'),
+    path.join(__dirname, '../public/favicon.svg'),
+  ];
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) return candidate;
+  }
+  return undefined;
+}
 
 // Crucial for Windows: ensures taskbar pinning, icons, and Start Menu shortcuts persist permanently
 if (process.platform === 'win32') {
@@ -11,7 +26,7 @@ let mainWindow = null;
 function createWindow() {
   mainWindow = new BrowserWindow({
     title: 'CoreEditor',
-    icon: path.join(__dirname, '../public/favicon.svg'),
+    icon: getAppIconPath(),
     width: 1280,
     height: 820,
     minWidth: 800,
