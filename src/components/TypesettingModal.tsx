@@ -28,6 +28,19 @@ export const TypesettingModal: React.FC<TypesettingModalProps> = ({
   const [activeTab, setActiveTab] = useState<'transform' | 'cleaning' | 'organize'>('transform');
   const [lastAction, setLastAction] = useState<string | null>(null);
 
+  // Listen for Escape key
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleAction = (action: string, label: string) => {
@@ -41,7 +54,7 @@ export const TypesettingModal: React.FC<TypesettingModalProps> = ({
   return (
     <div
       id="typesetting-modal-overlay"
-      className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4 font-sans select-none"
+      className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center z-[100] p-4 font-sans select-none"
       onClick={onClose}
     >
       <div

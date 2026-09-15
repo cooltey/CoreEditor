@@ -21,7 +21,8 @@ import {
   FileCode2, 
   Eye, 
   Sparkles,
-  ArrowUpDown
+  ArrowUpDown,
+  ChevronDown
 } from 'lucide-react';
 import { ViewMode } from '../types';
 
@@ -227,25 +228,56 @@ export const FormattingBar: React.FC<FormattingBarProps> = ({
 
         <div className="w-px h-3.5 bg-[#32323e] mx-1" />
 
-        {/* Text Transformation / Casing Dropdown */}
-        <div className="relative" ref={caseMenuRef}>
+        {/* Text Transformation / Typesetting Tools */}
+        <div className="flex items-center relative" ref={caseMenuRef}>
           <button
-            id="format-casing-btn"
-            onClick={() => setIsCaseMenuOpen(!isCaseMenuOpen)}
-            title="Text Casing & Line Cleanups"
-            className="flex items-center gap-1 h-6 px-1.5 rounded hover:bg-[#32323e] text-[#c0c0cc] hover:text-white transition-colors"
+            id="format-typesetting-btn"
+            onClick={() => {
+              if (onOpenTypesettingModal) {
+                onOpenTypesettingModal();
+              } else {
+                setIsCaseMenuOpen(!isCaseMenuOpen);
+              }
+            }}
+            title="Open Typesetting & Text Tools Window"
+            className="flex items-center gap-1 h-6 px-1.5 rounded-l hover:bg-[#343444] text-[#dcdce8] hover:text-white transition-colors bg-[#262632] border border-[#3c3c4c]"
           >
             <Sparkles className="w-3 h-3 text-amber-400" />
-            <span className="text-[10px]">Typesetting</span>
+            <span className="text-[10px] font-medium">Typesetting</span>
+          </button>
+          <button
+            id="format-casing-arrow-btn"
+            onClick={() => setIsCaseMenuOpen(!isCaseMenuOpen)}
+            title="Quick Formatting & Casing Menu"
+            className="h-6 px-1 rounded-r hover:bg-[#343444] text-[#a0a0b0] hover:text-white transition-colors bg-[#262632] border-y border-r border-[#3c3c4c]"
+          >
+            <ChevronDown className="w-2.5 h-2.5" />
           </button>
           {isCaseMenuOpen && (
-            <div className="absolute top-7 left-0 bg-[#262630] border border-[#3c3c4a] rounded shadow-xl py-1 z-50 min-w-[170px] text-xs">
+            <div 
+              className="absolute top-7 left-0 bg-[#24242e] border border-[#444458] rounded-md shadow-2xl py-1 z-[70] min-w-[190px] text-xs animate-in fade-in zoom-in-95 duration-100"
+              style={{ boxShadow: '0 10px 30px rgba(0, 0, 0, 0.7)' }}
+            >
+              <div className="px-3 py-1 text-[10px] text-[#8e8e9c] font-semibold uppercase tracking-wider border-b border-[#30303c] bg-[#1d1d24] flex items-center justify-between">
+                <span>Quick Casing</span>
+                {onOpenTypesettingModal && (
+                  <button 
+                    onClick={() => {
+                      setIsCaseMenuOpen(false);
+                      onOpenTypesettingModal();
+                    }}
+                    className="text-sky-400 hover:underline capitalize text-[10px]"
+                  >
+                    All Tools ↗
+                  </button>
+                )}
+              </div>
               <button
                 onClick={() => {
                   onAction('uppercase');
                   setIsCaseMenuOpen(false);
                 }}
-                className="w-full text-left px-3 py-1 hover:bg-[#383846] flex items-center gap-2"
+                className="w-full text-left px-3 py-1 hover:bg-[#383846] flex items-center gap-2 text-[#d4d4e0]"
               >
                 <CaseUpper className="w-3.5 h-3.5 text-sky-400" />
                 <span>UPPERCASE</span>
@@ -255,7 +287,7 @@ export const FormattingBar: React.FC<FormattingBarProps> = ({
                   onAction('lowercase');
                   setIsCaseMenuOpen(false);
                 }}
-                className="w-full text-left px-3 py-1 hover:bg-[#383846] flex items-center gap-2"
+                className="w-full text-left px-3 py-1 hover:bg-[#383846] flex items-center gap-2 text-[#d4d4e0]"
               >
                 <CaseLower className="w-3.5 h-3.5 text-sky-400" />
                 <span>lowercase</span>
@@ -265,7 +297,7 @@ export const FormattingBar: React.FC<FormattingBarProps> = ({
                   onAction('titlecase');
                   setIsCaseMenuOpen(false);
                 }}
-                className="w-full text-left px-3 py-1 hover:bg-[#383846] flex items-center gap-2"
+                className="w-full text-left px-3 py-1 hover:bg-[#383846] flex items-center gap-2 text-[#d4d4e0]"
               >
                 <span className="font-semibold text-xs text-sky-400">Aa</span>
                 <span>Title Case</span>
@@ -276,7 +308,7 @@ export const FormattingBar: React.FC<FormattingBarProps> = ({
                   onAction('cleanWhitespace');
                   setIsCaseMenuOpen(false);
                 }}
-                className="w-full text-left px-3 py-1 hover:bg-[#383846]"
+                className="w-full text-left px-3 py-1 hover:bg-[#383846] text-[#c8c8d4]"
               >
                 Trim Trailing Spaces
               </button>
@@ -285,7 +317,7 @@ export const FormattingBar: React.FC<FormattingBarProps> = ({
                   onAction('cleanEmptyLines');
                   setIsCaseMenuOpen(false);
                 }}
-                className="w-full text-left px-3 py-1 hover:bg-[#383846]"
+                className="w-full text-left px-3 py-1 hover:bg-[#383846] text-[#c8c8d4]"
               >
                 Remove Double Blanks
               </button>
@@ -294,7 +326,7 @@ export const FormattingBar: React.FC<FormattingBarProps> = ({
                   onAction('sortLines');
                   setIsCaseMenuOpen(false);
                 }}
-                className="w-full text-left px-3 py-1 hover:bg-[#383846] flex items-center gap-1.5"
+                className="w-full text-left px-3 py-1 hover:bg-[#383846] flex items-center gap-1.5 text-[#c8c8d4]"
               >
                 <ArrowUpDown className="w-3 h-3 text-emerald-400" />
                 <span>Sort Lines (A-Z)</span>
@@ -307,10 +339,10 @@ export const FormattingBar: React.FC<FormattingBarProps> = ({
                       setIsCaseMenuOpen(false);
                       onOpenTypesettingModal();
                     }}
-                    className="w-full text-left px-3 py-1 hover:bg-[#383846] flex items-center justify-between text-sky-400 font-medium"
+                    className="w-full text-left px-3 py-1.5 hover:bg-[#383846] flex items-center justify-between text-amber-400 font-medium bg-[#1d1d24]"
                   >
-                    <span>More Typesetting Tools...</span>
-                    <span className="text-[10px] bg-sky-500/20 px-1 rounded text-sky-300">Open</span>
+                    <span>Open Typesetting Window...</span>
+                    <span className="text-[10px] bg-amber-500/20 px-1 rounded text-amber-300">Open</span>
                   </button>
                 </>
               )}

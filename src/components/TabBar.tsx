@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Plus, X, ChevronDown, ChevronLeft, ChevronRight, Pin, FileText, Check } from 'lucide-react';
+import { Plus, X, ChevronDown, ChevronLeft, ChevronRight, Pin, FileText, Check, History, RotateCcw } from 'lucide-react';
 import { TabItem } from '../types';
 
 interface TabBarProps {
@@ -15,6 +15,8 @@ interface TabBarProps {
   onRenameTab: (id: string) => void;
   onTogglePinTab: (id: string) => void;
   onReorderTabs: (sourceIndex: number, destIndex: number) => void;
+  recentlyClosedTabs?: TabItem[];
+  onReopenClosedTab?: (tabToRestore?: TabItem) => void;
 }
 
 export const TabBar: React.FC<TabBarProps> = ({
@@ -30,6 +32,8 @@ export const TabBar: React.FC<TabBarProps> = ({
   onRenameTab,
   onTogglePinTab,
   onReorderTabs,
+  recentlyClosedTabs = [],
+  onReopenClosedTab,
 }) => {
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
@@ -39,10 +43,12 @@ export const TabBar: React.FC<TabBarProps> = ({
   } | null>(null);
 
   const [isQuickSwitchOpen, setIsQuickSwitchOpen] = useState(false);
+  const [isRecentlyClosedOpen, setIsRecentlyClosedOpen] = useState(false);
   const [draggedTabId, setDraggedTabId] = useState<string | null>(null);
   const tabListRef = useRef<HTMLDivElement>(null);
   const activeTabElRef = useRef<HTMLDivElement | null>(null);
   const quickSwitchRef = useRef<HTMLDivElement>(null);
+  const recentlyClosedRef = useRef<HTMLDivElement>(null);
 
   // Auto scroll active tab into view whenever activeTabId changes
   useEffect(() => {
@@ -70,12 +76,15 @@ export const TabBar: React.FC<TabBarProps> = ({
       if (quickSwitchRef.current && !quickSwitchRef.current.contains(e.target as Node)) {
         setIsQuickSwitchOpen(false);
       }
+      if (recentlyClosedRef.current && !recentlyClosedRef.current.contains(e.target as Node)) {
+        setIsRecentlyClosedOpen(false);
+      }
     };
-    if (isQuickSwitchOpen) {
+    if (isQuickSwitchOpen || isRecentlyClosedOpen) {
       window.addEventListener('mousedown', handleOutside);
     }
     return () => window.removeEventListener('mousedown', handleOutside);
-  }, [isQuickSwitchOpen]);
+  }, [isQuickSwitchOpen, isRecentlyClosedOpen]);
 
   const handleContextMenu = (e: React.MouseEvent, tabId: string) => {
     e.preventDefault();
@@ -258,6 +267,82 @@ export const TabBar: React.FC<TabBarProps> = ({
           <Plus className="w-3.5 h-3.5" />
         </button>
 
+        {/* Recently Closed Notes Dropdown */}
+        {onReopenClosedTab && (
+          <div className="relative flex items-center h-full border-r border-[#26262e]" ref={recentlyClosedRef}>
+            <button
+              id="recently-closed-tabs-btn"
+              onClick={() => setIsRecentlyClosedOpen(!isRecentlyClosedOpen)}
+              title={
+                recentlyClosedTabs.length > 0
+                  ? `Recently Closed Notes (${recentlyClosedTabs.length}) — Click to restore or press Ctrl+Shift+T`
+                  : 'Recently Closed Notes (Empty) — Closed tabs will appear here'
+              }
+              className={`h-full px-2 flex items-center justify-center transition-colors ${
+                isRecentlyClosedOpen
+                  ? 'bg-[#2a2a34] text-sky-400'
+                  : recentlyClosedTabs.length > 0
+                  ? 'text-[#8e8e99] hover:text-sky-400 hover:bg-[#22222b]'
+                  : 'text-[#626270] hover:text-[#9090a0] hover:bg-[#202028]'
+              }`}
+            >
+              <History className="w-3.5 h-3.5" />
+            </button>
+
+            {isRecentlyClosedOpen && (
+              <div 
+                className="absolute right-0 top-9 w-72 max-h-80 overflow-y-auto bg-[#23232a] border border-[#3c3c48] rounded-md shadow-2xl py-1 z-50 text-xs animate-in fade-in zoom-in-95 duration-100"
+                style={{ boxShadow: '0 10px 30px rgba(0, 0, 0, 0.65)' }}
+              >
+                <div className="px-3 py-1.5 text-[10px] text-[#8e8e99] font-medium uppercase tracking-wider border-b border-[#30303a] flex justify-between items-center bg-[#1c1c22]">
+                  <span>Recently Closed Notes</span>
+                  <span className="text-[10px] text-sky-400">Ctrl+Shift+T</span>
+                </div>
+                {recentlyClosedTabs.length === 0 ? (
+                  <div className="px-4 py-4 text-center text-[#7e7e8c] text-[11px] leading-relaxed">
+                    <p>No recently closed notes.</p>
+                    <p className="text-[10px] text-[#606070] mt-1">Closed notes will be preserved here for 1-click recovery.</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="divide-y divide-[#2a2a34]">
+                      {recentlyClosedTabs.map((closedTab) => (
+                        <button
+                          key={closedTab.id}
+                          onClick={() => {
+                            onReopenClosedTab(closedTab);
+                            setIsRecentlyClosedOpen(false);
+                          }}
+                          className="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-[#32323c] text-[#c8c8d0] hover:text-white transition-colors group"
+                        >
+                          <div className="flex items-center gap-2 truncate pr-2">
+                            <FileText className={`w-3.5 h-3.5 shrink-0 ${closedTab.title.endsWith('.md') ? 'text-sky-400' : 'text-[#8e8e99]'}`} />
+                            <span className="truncate">{closedTab.title}</span>
+                          </div>
+                          <span className="text-[10px] text-sky-400 opacity-0 group-hover:opacity-100 shrink-0 font-medium flex items-center gap-1">
+                            <RotateCcw className="w-2.5 h-2.5" /> Restore
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="p-1.5 border-t border-[#30303a] bg-[#1a1a20]">
+                      <button
+                        onClick={() => {
+                          onReopenClosedTab();
+                          setIsRecentlyClosedOpen(false);
+                        }}
+                        className="w-full py-1 rounded text-center text-[11px] bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 font-medium transition-colors"
+                      >
+                        Reopen Last Closed Note (Ctrl+Shift+T)
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Tab Overflow / Quick Switcher Dropdown */}
         <div className="relative flex items-center h-full px-1" ref={quickSwitchRef}>
           <button
@@ -337,6 +422,18 @@ export const TabBar: React.FC<TabBarProps> = ({
             <span>Close</span>
             <span className="text-[10px] text-[#80808c]">Ctrl+W</span>
           </button>
+          {onReopenClosedTab && recentlyClosedTabs.length > 0 && (
+            <button
+              onClick={() => {
+                onReopenClosedTab();
+                setContextMenu(null);
+              }}
+              className="w-full text-left px-3 py-1 hover:bg-[#343440] flex justify-between text-sky-400 font-medium"
+            >
+              <span>Reopen Closed Tab</span>
+              <span className="text-[10px] text-[#80808c]">Ctrl+Shift+T</span>
+            </button>
+          )}
           <button
             onClick={() => {
               onCloseOthers(contextMenu.tabId);

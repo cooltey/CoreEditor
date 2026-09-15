@@ -134,6 +134,15 @@ export default function App() {
   const [isTypesettingModalOpen, setIsTypesettingModalOpen] = useState(false);
   const [tabToClose, setTabToClose] = useState<TabItem | null>(null);
 
+  // Recently closed tabs stack for instant recovery
+  const [recentlyClosedTabs, setRecentlyClosedTabs] = useState<TabItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('coreeditor_recently_closed_tabs');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [];
+  });
+
   // Find & Replace
   const [findReplace, setFindReplace] = useState<FindReplaceState>({
     isOpen: false,
@@ -458,6 +467,19 @@ export default function App() {
       clearTimeout(autoSaveTimerRef.current);
       autoSaveTimerRef.current = null;
     }
+
+    // Save to recently closed tabs for instant restoration
+    const targetClosed = tabs.find((t) => t.id === tabIdToClose);
+    if (targetClosed) {
+      setRecentlyClosedTabs((prev) => {
+        const next = [targetClosed, ...prev.filter((t) => t.id !== targetClosed.id)].slice(0, 15);
+        try {
+          localStorage.setItem('coreeditor_recently_closed_tabs', JSON.stringify(next));
+        } catch {}
+        return next;
+      });
+    }
+
     if (tabs.length === 1) {
       // If closing last tab, create an empty one
       const fallback: TabItem = {
@@ -536,6 +558,37 @@ export default function App() {
     performTabClose(targetId);
     setSaveToast(`Closed "${targetTitle}"`);
   }, [tabToClose, performTabClose]);
+
+  // Reopen closed tab (supports restoring specific tab or the most recently closed tab)
+  const handleReopenClosedTab = useCallback((tabToRestoreParam?: TabItem) => {
+    setRecentlyClosedTabs((prev) => {
+      if (prev.length === 0) {
+        setSaveToast('No recently closed notes to restore');
+        return prev;
+      }
+      const target = tabToRestoreParam || prev[0];
+      const remaining = prev.filter((t) => t.id !== target.id);
+      try {
+        localStorage.setItem('coreeditor_recently_closed_tabs', JSON.stringify(remaining));
+      } catch {}
+
+      // Add back to tabs
+      setTabs((curTabs) => {
+        const alreadyExists = curTabs.some((t) => t.id === target.id);
+        const restoredTab: TabItem = alreadyExists
+          ? { ...target, id: `tab-${Date.now()}` }
+          : target;
+
+        const nextTabs = [...curTabs, restoredTab];
+        persistTabsDirectly(nextTabs, restoredTab.id);
+        setActiveTabId(restoredTab.id);
+        return nextTabs;
+      });
+
+      setSaveToast(`Restored note "${target.title}"`);
+      return remaining;
+    });
+  }, [persistTabsDirectly]);
 
   const handleCloseOthers = useCallback((tabIdToKeep: string) => {
     if (autoSaveTimerRef.current) {
@@ -1169,6 +1222,9 @@ export default function App() {
       } else if (mod && !e.shiftKey && e.key.toLowerCase() === 'w') {
         e.preventDefault();
         handleCloseTab(activeTabId);
+      } else if (mod && e.shiftKey && e.key.toLowerCase() === 't') {
+        e.preventDefault();
+        handleReopenClosedTab();
       } else if (mod && !e.shiftKey && e.key.toLowerCase() === 's') {
         e.preventDefault();
         handleSaveFile();
@@ -1210,7 +1266,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeTabId, handleNewTab, handleCloseTab, handleSaveFile, handleExportMarkdown, handleOpenFileClick, applyFormatting, handleChangeFontSize]);
+  }, [activeTabId, handleNewTab, handleCloseTab, handleReopenClosedTab, handleSaveFile, handleExportMarkdown, handleOpenFileClick, applyFormatting, handleChangeFontSize]);
 
   // Split Divider Dragging
   const handleSplitMouseDown = (e: React.MouseEvent) => {
@@ -1267,6 +1323,14 @@ export default function App() {
       shortcut: 'Ctrl+S',
       keywords: ['store', 'write'],
       action: handleSaveFile,
+    },
+    {
+      id: 'cmd-reopen-closed-tab',
+      title: 'Reopen Closed Tab (Undo Close)',
+      category: 'File',
+      shortcut: 'Ctrl+Shift+T',
+      keywords: ['restore', 'reopen', 'closed', 'undo', 'tab', 'recover'],
+      action: () => handleReopenClosedTab(),
     },
     {
       id: 'cmd-export-md',
@@ -1593,6 +1657,8 @@ export default function App() {
         onToggleGrammarCheck={() => setSettings((s) => ({ ...s, grammarCheck: !s.grammarCheck }))}
         confirmOnCloseTab={settings.confirmOnCloseTab}
         onToggleConfirmOnCloseTab={() => setSettings((s) => ({ ...s, confirmOnCloseTab: !s.confirmOnCloseTab }))}
+        onReopenClosedTab={handleReopenClosedTab}
+        hasRecentlyClosedTabs={recentlyClosedTabs.length > 0}
       />
 
       {/* 3. Tab Bar with Tab Management */}
@@ -1609,6 +1675,8 @@ export default function App() {
         onRenameTab={handleStartRename}
         onTogglePinTab={handleTogglePinTab}
         onReorderTabs={handleReorderTabs}
+        recentlyClosedTabs={recentlyClosedTabs}
+        onReopenClosedTab={handleReopenClosedTab}
       />
 
       {/* 4. Enhanced Typesetting / Formatting Bar */}
@@ -1832,13 +1900,20 @@ Try reviewing and fixing the following deliberately placed errors using the righ
       {/* Tab Close Confirmation Prompt Modal */}
       <CloseTabModal
         isOpen={Boolean(tabToClose)}
+        tab={tabToClose}
         tabTitle={tabToClose?.title || ''}
         isDirty={Boolean(tabToClose?.isDirty)}
+        hasOtherTabs={tabs.length > 1}
         confirmOnCloseEnabled={settings.confirmOnCloseTab}
+        confirmOnCloseAll={settings.confirmOnCloseTab}
         onConfirm={handleConfirmCloseTabModal}
+        onConfirmClose={handleConfirmCloseTabModal}
         onCancel={() => setTabToClose(null)}
         onToggleConfirmPreference={(enabled) => {
           setSettings((s) => ({ ...s, confirmOnCloseTab: enabled }));
+        }}
+        onToggleConfirmSetting={() => {
+          setSettings((s) => ({ ...s, confirmOnCloseTab: !s.confirmOnCloseTab }));
         }}
       />
 
@@ -1849,14 +1924,24 @@ Try reviewing and fixing the following deliberately placed errors using the righ
         onApplyAction={(action) => applyFormatting(action as any)}
       />
 
-      {/* Save Notification Toast */}
+      {/* Toast Notification with optional Undo Reopen Action */}
       {saveToast && (
         <div 
           id="app-save-toast"
-          className="fixed bottom-9 right-4 bg-[#23232c] border border-emerald-500/40 text-emerald-300 text-xs px-3 py-1.5 rounded shadow-xl flex items-center gap-2 z-50 animate-in fade-in slide-in-from-bottom-2 duration-150"
+          className="fixed bottom-9 right-4 bg-[#23232c] border border-sky-500/40 text-[#f0f0f8] text-xs px-3.5 py-2 rounded-lg shadow-2xl flex items-center gap-3 z-50 animate-in fade-in slide-in-from-bottom-2 duration-150"
         >
-          <span className="w-2 h-2 rounded-full bg-emerald-400" />
+          <span className="w-2 h-2 rounded-full bg-sky-400 shrink-0" />
           <span>{saveToast}</span>
+          {recentlyClosedTabs.length > 0 && saveToast.startsWith('Closed ') && (
+            <button
+              onClick={() => handleReopenClosedTab()}
+              className="ml-1 px-2 py-0.5 rounded bg-sky-600/30 hover:bg-sky-600/50 text-sky-200 font-medium text-[11px] transition-colors border border-sky-500/40 flex items-center gap-1 cursor-pointer"
+              title="Restore closed note (Ctrl+Shift+T)"
+            >
+              <span>Restore</span>
+              <span className="text-[10px] text-sky-300/80 font-mono">Ctrl+Shift+T</span>
+            </button>
+          )}
         </div>
       )}
     </div>

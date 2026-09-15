@@ -47,6 +47,7 @@ interface MenuBarProps {
   onToggleGrammarCheck?: () => void;
   confirmOnCloseTab?: boolean;
   onToggleConfirmOnCloseTab?: () => void;
+  onReopenClosedTab?: () => void;
 }
 
 export const MenuBar: React.FC<MenuBarProps> = ({
@@ -94,6 +95,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
   onToggleGrammarCheck,
   confirmOnCloseTab = true,
   onToggleConfirmOnCloseTab,
+  onReopenClosedTab,
 }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const menuBarRef = useRef<HTMLDivElement>(null);
@@ -180,6 +182,12 @@ export const MenuBar: React.FC<MenuBarProps> = ({
               <span>Close Current Tab</span>
               <span className="text-[10px] text-[#8e8e99]">Ctrl+W</span>
             </button>
+            {onReopenClosedTab && (
+              <button onClick={() => triggerAction(onReopenClosedTab)} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center text-sky-400">
+                <span>Reopen Closed Tab</span>
+                <span className="text-[10px] text-[#8e8e99]">Ctrl+Shift+T</span>
+              </button>
+            )}
           </div>
         )}
       </div>

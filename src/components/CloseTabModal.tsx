@@ -4,38 +4,81 @@ import { TabItem } from '../types';
 
 interface CloseTabModalProps {
   isOpen: boolean;
-  tab: TabItem | null;
-  hasOtherTabs: boolean;
-  onConfirmClose: (saveFirst: boolean) => void;
+  tab?: TabItem | null;
+  tabTitle?: string;
+  isDirty?: boolean;
+  hasOtherTabs?: boolean;
+  onConfirmClose?: (saveFirst: boolean) => void;
+  onConfirm?: (saveFirst: boolean) => void;
   onCancel: () => void;
-  confirmOnCloseAll: boolean;
-  onToggleConfirmSetting: () => void;
+  confirmOnCloseAll?: boolean;
+  confirmOnCloseEnabled?: boolean;
+  onToggleConfirmSetting?: () => void;
+  onToggleConfirmPreference?: (enabled: boolean) => void;
 }
 
 export const CloseTabModal: React.FC<CloseTabModalProps> = ({
   isOpen,
   tab,
-  hasOtherTabs,
+  tabTitle,
+  isDirty: propIsDirty,
+  hasOtherTabs = true,
   onConfirmClose,
+  onConfirm,
   onCancel,
   confirmOnCloseAll,
+  confirmOnCloseEnabled,
   onToggleConfirmSetting,
+  onToggleConfirmPreference,
 }) => {
-  if (!isOpen || !tab) return null;
+  // Listen for Escape key to dismiss
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onCancel();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onCancel]);
 
-  const charCount = tab.content.length;
-  const lineCount = tab.content.split('\n').length;
-  const previewSnippet = tab.content.trim().slice(0, 140);
+  if (!isOpen) return null;
+
+  const resolvedTitle = tab?.title || tabTitle || 'Untitled Note';
+  const resolvedIsDirty = tab?.isDirty ?? propIsDirty ?? false;
+  const isConfirmEnabled = confirmOnCloseAll ?? confirmOnCloseEnabled ?? true;
+
+  const handleConfirm = (saveFirst: boolean) => {
+    if (onConfirmClose) {
+      onConfirmClose(saveFirst);
+    } else if (onConfirm) {
+      onConfirm(saveFirst);
+    }
+  };
+
+  const handleTogglePreference = () => {
+    if (onToggleConfirmSetting) {
+      onToggleConfirmSetting();
+    } else if (onToggleConfirmPreference) {
+      onToggleConfirmPreference(!isConfirmEnabled);
+    }
+  };
+
+  const charCount = tab?.content ? tab.content.length : 0;
+  const lineCount = tab?.content ? tab.content.split('\n').length : 1;
+  const previewSnippet = tab?.content ? tab.content.trim().slice(0, 140) : '';
 
   return (
     <div
       id="close-tab-modal-overlay"
-      className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4 font-sans select-none"
+      className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center z-[100] p-4 font-sans select-none"
       onClick={onCancel}
     >
       <div
         id="close-tab-modal-dialog"
-        className="bg-[#24242c] border border-[#3e3e4c] rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        className="bg-[#24242c] border border-[#444455] rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -47,7 +90,7 @@ export const CloseTabModal: React.FC<CloseTabModalProps> = ({
             <div>
               <h3 className="text-sm font-semibold text-[#f0f0f4]">Close Tab Confirmation</h3>
               <p className="text-[11px] text-[#8e8e9c]">
-                {tab.isDirty ? 'This note has unsaved changes' : 'Confirm closing this note tab'}
+                {resolvedIsDirty ? 'This note has unsaved changes' : 'Confirm closing this note tab'}
               </p>
             </div>
           </div>
@@ -66,8 +109,8 @@ export const CloseTabModal: React.FC<CloseTabModalProps> = ({
           <div className="bg-[#1b1b22] border border-[#2e2e3a] rounded-lg p-3.5 space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 font-medium text-white truncate pr-2">
-                <FileText className={`w-4 h-4 shrink-0 ${tab.title.endsWith('.md') ? 'text-sky-400' : 'text-amber-400'}`} />
-                <span className="truncate text-sm">{tab.title}</span>
+                <FileText className={`w-4 h-4 shrink-0 ${resolvedTitle.endsWith('.md') ? 'text-sky-400' : 'text-amber-400'}`} />
+                <span className="truncate text-sm">{resolvedTitle}</span>
               </div>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#272733] text-[#a0a0b2] shrink-0">
                 {lineCount} lines · {charCount} chars
@@ -87,13 +130,13 @@ export const CloseTabModal: React.FC<CloseTabModalProps> = ({
 
           {/* Prompt Message */}
           <p className="text-[12px] leading-relaxed text-[#a8a8b8]">
-            {tab.isDirty ? (
+            {resolvedIsDirty ? (
               <span>
-                Do you want to save the changes before closing <strong className="text-white">"{tab.title}"</strong>? If you close without saving, your recent edits will be lost.
+                Do you want to save the changes before closing <strong className="text-white">"{resolvedTitle}"</strong>? If you close without saving, your recent edits will be lost.
               </span>
             ) : (
               <span>
-                Are you sure you want to close <strong className="text-white">"{tab.title}"</strong>?
+                Are you sure you want to close <strong className="text-white">"{resolvedTitle}"</strong>?
                 {!hasOtherTabs && ' (This is your only open tab; closing it will create a fresh blank note)'}
               </span>
             )}
@@ -104,8 +147,8 @@ export const CloseTabModal: React.FC<CloseTabModalProps> = ({
             <label className="flex items-center gap-2 cursor-pointer hover:text-[#d0d0dc] select-none">
               <input
                 type="checkbox"
-                checked={confirmOnCloseAll}
-                onChange={onToggleConfirmSetting}
+                checked={isConfirmEnabled}
+                onChange={handleTogglePreference}
                 className="rounded border-[#404050] bg-[#1b1b22] text-sky-500 focus:ring-0 w-3.5 h-3.5"
               />
               <span>Always ask before closing tabs</span>
@@ -126,17 +169,17 @@ export const CloseTabModal: React.FC<CloseTabModalProps> = ({
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => onConfirmClose(false)}
+              onClick={() => handleConfirm(false)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#343442] hover:bg-rose-900/60 hover:text-rose-200 text-[#d4d4e0] transition-colors text-xs font-medium border border-[#444456]"
-              title={tab.isDirty ? 'Discard unsaved changes and close' : 'Close tab'}
+              title={resolvedIsDirty ? 'Discard unsaved changes and close' : 'Close tab'}
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span>{tab.isDirty ? 'Discard & Close' : 'Close Tab'}</span>
+              <span>{resolvedIsDirty ? 'Discard & Close' : 'Close Tab'}</span>
             </button>
 
-            {tab.isDirty && (
+            {resolvedIsDirty && (
               <button
-                onClick={() => onConfirmClose(true)}
+                onClick={() => handleConfirm(true)}
                 className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-sky-600 hover:bg-sky-500 text-white transition-colors text-xs font-medium shadow-sm"
                 title="Save changes and close"
               >
