@@ -466,24 +466,40 @@ export const Editor: React.FC<EditorProps> = ({
               )}
               <div className="h-px bg-[#33333d]" />
             </div>
-          ) : grammarIssues.length > 0 ? (
-            /* If no issue directly under click, show link to active issues */
+          ) : (
+            /* When no grammar issue under cursor, show status summary */
             <div className="p-1 border-b border-[#33333d]">
-              <button
-                onClick={() => {
-                  if (onOpenGrammarModal) onOpenGrammarModal();
-                  setContextMenu(null);
-                }}
-                className="w-full text-left px-2.5 py-1.5 rounded hover:bg-[#33333d] text-sky-400 flex items-center justify-between"
-              >
-                <div className="flex items-center gap-1.5">
-                  <SpellCheck className="w-3.5 h-3.5 shrink-0" />
-                  <span>Grammar: {grammarIssues.length} hint(s) in document</span>
-                </div>
-                <span className="text-[10px] bg-sky-500/20 text-sky-300 px-1 rounded">Review</span>
-              </button>
+              {grammarIssues.length > 0 ? (
+                <button
+                  onClick={() => {
+                    if (onOpenGrammarModal) onOpenGrammarModal();
+                    setContextMenu(null);
+                  }}
+                  className="w-full text-left px-2.5 py-1.5 rounded hover:bg-[#33333d] text-sky-400 flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <SpellCheck className="w-3.5 h-3.5 shrink-0" />
+                    <span>Grammar: {grammarIssues.length} hint(s) in document</span>
+                  </div>
+                  <span className="text-[10px] bg-sky-500/20 text-sky-300 px-1 rounded">Review</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    if (onOpenGrammarModal) onOpenGrammarModal();
+                    setContextMenu(null);
+                  }}
+                  className="w-full text-left px-2.5 py-1.5 rounded hover:bg-[#282834] text-[#a0a0b0] flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span>Grammar & Spelling: Clean</span>
+                  </div>
+                  <span className="text-[10px] text-[#707080]">Check</span>
+                </button>
+              )}
             </div>
-          ) : null}
+          )}
 
           {/* 2. Format Selected Text Options */}
           {contextMenu.selectedText && (

@@ -1729,6 +1729,34 @@ export default function App() {
         onToggleNativeSpellCheck={() => setSettings((s) => ({ ...s, spellCheck: !s.spellCheck }))}
         grammarCheckEnabled={settings.grammarCheck}
         onToggleGrammarCheck={() => setSettings((s) => ({ ...s, grammarCheck: !s.grammarCheck }))}
+        onInsertSampleText={() => {
+          handleNewTab(
+            'Grammar_Test_Demo.md',
+            `# English Grammar & Spelling Test Demo 📝
+
+Try reviewing and fixing the following deliberately placed errors using the right-click menu or the Grammar panel:
+
+1. **Duplicate Words**:
+   This is the the best way to write notes in markdown.
+
+2. **Common Confusions & Contractions**:
+   - its going to take affect soon.
+   - We should of checked there new car.
+   - Your welcome to join if you're computer is ready.
+   - Better then before, rather then later.
+
+3. **Spelling Mistakes**:
+   - I recieved an email about the new calender and schedual.
+   - It is definately neccessary to seperate the logic.
+   - We are writting a garmmar checker that runs completly offline.
+
+4. **Articles & Style**:
+   - This is a apple and an user.
+   - In order to succeed, we utilize modern tools due to the fact that they are faster.
+`
+          );
+          setSaveToast('Created "Grammar_Test_Demo.md" with sample errors');
+        }}
       />
 
       {/* Save Notification Toast */}

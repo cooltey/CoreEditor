@@ -25,6 +25,7 @@ interface GrammarModalProps {
   onToggleNativeSpellCheck: () => void;
   grammarCheckEnabled: boolean;
   onToggleGrammarCheck: () => void;
+  onInsertSampleText?: () => void;
 }
 
 export const GrammarModal: React.FC<GrammarModalProps> = ({
@@ -38,6 +39,7 @@ export const GrammarModal: React.FC<GrammarModalProps> = ({
   onToggleNativeSpellCheck,
   grammarCheckEnabled,
   onToggleGrammarCheck,
+  onInsertSampleText,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -119,15 +121,28 @@ export const GrammarModal: React.FC<GrammarModalProps> = ({
             </label>
           </div>
 
-          {issues.length > 0 && (
-            <button
-              onClick={() => onApplyAllFixes(issues)}
-              className="flex items-center gap-1.5 px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded font-medium text-xs transition-colors shadow-xs"
-            >
-              <Wand2 className="w-3.5 h-3.5" />
-              <span>Fix All Issues ({issues.length})</span>
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {onInsertSampleText && (
+              <button
+                onClick={onInsertSampleText}
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-[#2a2a36] hover:bg-[#383846] text-[#c0c0d0] hover:text-white rounded border border-[#404050] text-xs transition-colors"
+                title="Load a test passage with common grammar & spelling errors to test the checker"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>Test Grammar Demo</span>
+              </button>
+            )}
+
+            {issues.length > 0 && (
+              <button
+                onClick={() => onApplyAllFixes(issues)}
+                className="flex items-center gap-1.5 px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded font-medium text-xs transition-colors shadow-xs"
+              >
+                <Wand2 className="w-3.5 h-3.5" />
+                <span>Fix All Issues ({issues.length})</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Category Filter Tabs */}
@@ -171,6 +186,15 @@ export const GrammarModal: React.FC<GrammarModalProps> = ({
               <p className="text-xs text-[#8e8e9c] mt-1 max-w-sm">
                 Your English writing is clean. No common grammar confusions, spelling mistakes, or redundant phrasing were found.
               </p>
+              {onInsertSampleText && (
+                <button
+                  onClick={onInsertSampleText}
+                  className="mt-4 flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded font-medium text-xs transition-colors shadow-sm"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Insert Sample Mistakes to Test Checker</span>
+                </button>
+              )}
             </div>
           ) : (
             filteredIssues.map((issue) => {
