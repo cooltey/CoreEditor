@@ -26,6 +26,8 @@ import { AboutModal } from './components/AboutModal';
 import { PackageExeModal } from './components/PackageExeModal';
 import { FontSettingsModal } from './components/FontSettingsModal';
 import { GrammarModal } from './components/GrammarModal';
+import { CloseTabModal } from './components/CloseTabModal';
+import { TypesettingModal } from './components/TypesettingModal';
 import { checkGrammar } from './utils/grammarChecker';
 
 const STORAGE_KEY_TABS = 'coreeditor_tabs_v1';
@@ -49,6 +51,7 @@ const DEFAULT_SETTINGS: EditorSettings = {
   autoSave: true,
   spellCheck: true,
   grammarCheck: true,
+  confirmOnCloseTab: true,
 };
 
 export default function App() {
@@ -128,6 +131,8 @@ export default function App() {
   const [isPackageModalOpen, setIsPackageModalOpen] = useState(false);
   const [isFontSettingsOpen, setIsFontSettingsOpen] = useState(false);
   const [isGrammarModalOpen, setIsGrammarModalOpen] = useState(false);
+  const [isTypesettingModalOpen, setIsTypesettingModalOpen] = useState(false);
+  const [tabToClose, setTabToClose] = useState<TabItem | null>(null);
 
   // Find & Replace
   const [findReplace, setFindReplace] = useState<FindReplaceState>({
@@ -447,7 +452,8 @@ export default function App() {
     setSaveStatus('saved');
   }, [tabs.length, performAutoSave, persistTabsDirectly]);
 
-  const handleCloseTab = useCallback((tabIdToClose: string) => {
+  // Actual execution of tab closing
+  const performTabClose = useCallback((tabIdToClose: string) => {
     if (autoSaveTimerRef.current) {
       clearTimeout(autoSaveTimerRef.current);
       autoSaveTimerRef.current = null;
@@ -485,6 +491,51 @@ export default function App() {
     const nextActiveTab = newTabs.find((t) => t.id === nextActive);
     setSaveStatus(nextActiveTab?.isDirty ? 'dirty' : 'saved');
   }, [tabs, activeTabId, persistTabsDirectly]);
+
+  // User requested to close tab (checks if confirmation prompt is required)
+  const handleCloseTab = useCallback((tabIdToClose: string) => {
+    const target = tabs.find((t) => t.id === tabIdToClose);
+    if (!target) return;
+
+    // Check if confirm prompt should appear:
+    // If confirmOnCloseTab is true OR if the tab has unsaved changes, prompt confirmation
+    if (settings.confirmOnCloseTab || target.isDirty) {
+      setTabToClose(target);
+    } else {
+      performTabClose(tabIdToClose);
+    }
+  }, [tabs, settings.confirmOnCloseTab, performTabClose]);
+
+  // Confirm close handler from modal
+  const handleConfirmCloseTabModal = useCallback((saveFirst: boolean) => {
+    if (!tabToClose) return;
+
+    if (saveFirst) {
+      // Save changes before closing
+      const closedId = tabToClose.id;
+      setTabs((prev) => {
+        const updated = prev.map((t) => {
+          if (t.id === closedId) {
+            return {
+              ...t,
+              originalContent: t.content,
+              isDirty: false,
+              updatedAt: Date.now(),
+            };
+          }
+          return t;
+        });
+        return updated;
+      });
+      setSaveToast(`Saved "${tabToClose.title}"`);
+    }
+
+    const targetId = tabToClose.id;
+    const targetTitle = tabToClose.title;
+    setTabToClose(null);
+    performTabClose(targetId);
+    setSaveToast(`Closed "${targetTitle}"`);
+  }, [tabToClose, performTabClose]);
 
   const handleCloseOthers = useCallback((tabIdToKeep: string) => {
     if (autoSaveTimerRef.current) {
@@ -1426,6 +1477,21 @@ export default function App() {
       keywords: ['grammar', 'style', 'rules'],
       action: () => setSettings((s) => ({ ...s, grammarCheck: !s.grammarCheck })),
     },
+    {
+      id: 'cmd-typesetting-dialog',
+      title: 'Tools: Typesetting & Formatting Center',
+      category: 'Format',
+      shortcut: 'Typeset',
+      keywords: ['typesetting', 'whitespace', 'casing', 'indent', 'clean', 'lines'],
+      action: () => setIsTypesettingModalOpen(true),
+    },
+    {
+      id: 'cmd-toggle-confirm-close-tab',
+      title: `Preferences: Confirm Before Closing Tab (Currently: ${settings.confirmOnCloseTab ? 'ON' : 'OFF'})`,
+      category: 'Preferences',
+      keywords: ['tab', 'close', 'confirm', 'alert', 'prompt', 'warning'],
+      action: () => setSettings((s) => ({ ...s, confirmOnCloseTab: !s.confirmOnCloseTab })),
+    },
   ], [
     handleNewTab, 
     handleOpenFileClick, 
@@ -1520,10 +1586,13 @@ export default function App() {
         onOpenAbout={() => setIsAboutModalOpen(true)}
         onOpenPackageModal={() => setIsPackageModalOpen(true)}
         onOpenGrammarModal={() => setIsGrammarModalOpen(true)}
+        onOpenTypesetting={() => setIsTypesettingModalOpen(true)}
         spellCheck={settings.spellCheck}
         onToggleSpellCheck={() => setSettings((s) => ({ ...s, spellCheck: !s.spellCheck }))}
         grammarCheck={settings.grammarCheck}
         onToggleGrammarCheck={() => setSettings((s) => ({ ...s, grammarCheck: !s.grammarCheck }))}
+        confirmOnCloseTab={settings.confirmOnCloseTab}
+        onToggleConfirmOnCloseTab={() => setSettings((s) => ({ ...s, confirmOnCloseTab: !s.confirmOnCloseTab }))}
       />
 
       {/* 3. Tab Bar with Tab Management */}
@@ -1549,6 +1618,7 @@ export default function App() {
           viewMode={viewMode}
           onChangeViewMode={setViewMode}
           onOpenTableModal={() => setIsTableModalOpen(true)}
+          onOpenTypesettingModal={() => setIsTypesettingModalOpen(true)}
         />
       )}
 
@@ -1757,6 +1827,26 @@ Try reviewing and fixing the following deliberately placed errors using the righ
           );
           setSaveToast('Created "Grammar_Test_Demo.md" with sample errors');
         }}
+      />
+
+      {/* Tab Close Confirmation Prompt Modal */}
+      <CloseTabModal
+        isOpen={Boolean(tabToClose)}
+        tabTitle={tabToClose?.title || ''}
+        isDirty={Boolean(tabToClose?.isDirty)}
+        confirmOnCloseEnabled={settings.confirmOnCloseTab}
+        onConfirm={handleConfirmCloseTabModal}
+        onCancel={() => setTabToClose(null)}
+        onToggleConfirmPreference={(enabled) => {
+          setSettings((s) => ({ ...s, confirmOnCloseTab: enabled }));
+        }}
+      />
+
+      {/* Standalone Typesetting & Clean Tools Modal */}
+      <TypesettingModal
+        isOpen={isTypesettingModalOpen}
+        onClose={() => setIsTypesettingModalOpen(false)}
+        onApplyAction={(action) => applyFormatting(action as any)}
       />
 
       {/* Save Notification Toast */}

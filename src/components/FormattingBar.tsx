@@ -30,6 +30,7 @@ interface FormattingBarProps {
   viewMode: ViewMode;
   onChangeViewMode: (mode: ViewMode) => void;
   onOpenTableModal: () => void;
+  onOpenTypesettingModal?: () => void;
 }
 
 export const FormattingBar: React.FC<FormattingBarProps> = ({
@@ -37,6 +38,7 @@ export const FormattingBar: React.FC<FormattingBarProps> = ({
   viewMode,
   onChangeViewMode,
   onOpenTableModal,
+  onOpenTypesettingModal,
 }) => {
   const [isCaseMenuOpen, setIsCaseMenuOpen] = useState(false);
   const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
@@ -60,7 +62,7 @@ export const FormattingBar: React.FC<FormattingBarProps> = ({
   return (
     <div 
       id="app-formatting-bar"
-      className="h-8 bg-[#202026] border-b border-[#2d2d36] flex items-center justify-between px-2 text-xs select-none relative z-10 overflow-x-auto no-scrollbar"
+      className="h-8 bg-[#202026] border-b border-[#2d2d36] flex items-center justify-between px-2 text-xs select-none relative z-30 overflow-visible"
     >
       {/* Left section: Formatting actions */}
       <div className="flex items-center gap-0.5 shrink-0">
@@ -297,6 +299,21 @@ export const FormattingBar: React.FC<FormattingBarProps> = ({
                 <ArrowUpDown className="w-3 h-3 text-emerald-400" />
                 <span>Sort Lines (A-Z)</span>
               </button>
+              {onOpenTypesettingModal && (
+                <>
+                  <div className="h-px bg-[#363644] my-1" />
+                  <button
+                    onClick={() => {
+                      setIsCaseMenuOpen(false);
+                      onOpenTypesettingModal();
+                    }}
+                    className="w-full text-left px-3 py-1 hover:bg-[#383846] flex items-center justify-between text-sky-400 font-medium"
+                  >
+                    <span>More Typesetting Tools...</span>
+                    <span className="text-[10px] bg-sky-500/20 px-1 rounded text-sky-300">Open</span>
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

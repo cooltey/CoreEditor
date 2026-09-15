@@ -51,6 +51,7 @@ export interface EditorSettings {
   autoSave: boolean;
   spellCheck: boolean;
   grammarCheck: boolean;
+  confirmOnCloseTab: boolean;
 }
 
 export interface GrammarIssue {

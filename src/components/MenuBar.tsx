@@ -40,10 +40,13 @@ interface MenuBarProps {
   onOpenAbout: () => void;
   onOpenPackageModal: () => void;
   onOpenGrammarModal?: () => void;
+  onOpenTypesetting?: () => void;
   spellCheck?: boolean;
   onToggleSpellCheck?: () => void;
   grammarCheck?: boolean;
   onToggleGrammarCheck?: () => void;
+  confirmOnCloseTab?: boolean;
+  onToggleConfirmOnCloseTab?: () => void;
 }
 
 export const MenuBar: React.FC<MenuBarProps> = ({
@@ -84,10 +87,13 @@ export const MenuBar: React.FC<MenuBarProps> = ({
   onOpenAbout,
   onOpenPackageModal,
   onOpenGrammarModal,
+  onOpenTypesetting,
   spellCheck = true,
   onToggleSpellCheck,
   grammarCheck = true,
   onToggleGrammarCheck,
+  confirmOnCloseTab = true,
+  onToggleConfirmOnCloseTab,
 }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const menuBarRef = useRef<HTMLDivElement>(null);
@@ -390,6 +396,18 @@ export const MenuBar: React.FC<MenuBarProps> = ({
             <button onClick={() => triggerAction(() => onFormatAction('titlecase'))} className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center">
               <span>Transform: Title Case</span>
             </button>
+            {onOpenTypesetting && (
+              <>
+                <div className="h-px bg-[#383842] my-1" />
+                <button 
+                  onClick={() => triggerAction(onOpenTypesetting)} 
+                  className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center text-amber-400 font-medium"
+                >
+                  <span>Typesetting & Text Tools...</span>
+                  <span className="text-[10px] bg-amber-500/20 px-1 rounded text-amber-300">Tools</span>
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -501,7 +519,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
             ))}
             
             <div className="h-px bg-[#383842] my-1" />
-            <div className="px-3 py-1 text-[10px] font-semibold text-[#888894] uppercase tracking-wider">Save Options</div>
+            <div className="px-3 py-1 text-[10px] font-semibold text-[#888894] uppercase tracking-wider">Tab & Save Options</div>
             <button
               onClick={() => triggerAction(onToggleAutoSave)}
               className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
@@ -509,6 +527,15 @@ export const MenuBar: React.FC<MenuBarProps> = ({
               <span>Auto Save on Pause (500ms)</span>
               {autoSave && <span className="text-sky-400">✓</span>}
             </button>
+            {onToggleConfirmOnCloseTab && (
+              <button
+                onClick={() => triggerAction(onToggleConfirmOnCloseTab)}
+                className="w-full text-left px-3 py-1 hover:bg-[#383842] flex justify-between items-center"
+              >
+                <span>Confirm Before Closing Tab</span>
+                {confirmOnCloseTab && <span className="text-sky-400">✓</span>}
+              </button>
+            )}
           </div>
         )}
       </div>
