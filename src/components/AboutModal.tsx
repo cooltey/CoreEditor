@@ -22,13 +22,13 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#30303b] bg-[#1e1e24]">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-red-500/50 shadow-md bg-red-950/40 p-0.5">
+            <div className="w-9 h-9 rounded-lg overflow-hidden shrink-0 border border-[#404254] shadow-md bg-[#1a1b22] p-0.5">
               <AppLogo className="w-full h-full object-cover rounded-md" />
             </div>
             <div>
               <div className="font-semibold text-white text-sm flex items-center gap-1.5">
                 <span>CoreEditor</span>
-                <span className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.2 rounded border border-red-500/30">v2.1</span>
+                <span className="text-[10px] bg-amber-500/15 text-amber-300 px-1.5 py-0.2 rounded border border-amber-500/30">v2.1</span>
               </div>
             </div>
           </div>
