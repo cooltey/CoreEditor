@@ -130,7 +130,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
     <div 
       id="app-menubar"
       ref={menuBarRef} 
-      className="h-6 bg-[#1f1f23] border-b border-[#2d2d34] flex items-center px-1 text-xs text-[#b8b8c2] select-none relative z-30 font-sans shrink-0"
+      className="h-6 bg-[#1f1f23] border-b border-[#2d2d34] flex items-center px-1 text-xs text-[#b8b8c2] select-none relative z-[60] overflow-visible font-sans shrink-0"
     >
       {/* File Menu */}
       <div className="relative">

@@ -258,6 +258,50 @@ export default function App() {
     }
   }, []);
 
+  // History Manager for Undo/Redo (ensures Ctrl+Z reliably reverts formatting and text changes)
+  interface HistorySnapshot {
+    content: string;
+    selectionStart: number;
+    selectionEnd: number;
+  }
+  interface TabHistory {
+    past: HistorySnapshot[];
+    future: HistorySnapshot[];
+  }
+
+  const historyMapRef = useRef<Record<string, TabHistory>>({});
+  const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Snapshot recording
+  const recordHistorySnapshot = useCallback((tabId: string, content?: string, selStart?: number, selEnd?: number) => {
+    if (!historyMapRef.current[tabId]) {
+      historyMapRef.current[tabId] = { past: [], future: [] };
+    }
+    const history = historyMapRef.current[tabId];
+    const textarea = textareaRef.current;
+    const contentToRecord = content !== undefined 
+      ? content 
+      : (tabsRef.current.find((t) => t.id === tabId)?.content ?? '');
+    const sStart = selStart !== undefined ? selStart : (textarea?.selectionStart ?? 0);
+    const sEnd = selEnd !== undefined ? selEnd : (textarea?.selectionEnd ?? 0);
+
+    const last = history.past[history.past.length - 1];
+    if (last && last.content === contentToRecord) {
+      return;
+    }
+
+    history.past.push({
+      content: contentToRecord,
+      selectionStart: sStart,
+      selectionEnd: sEnd,
+    });
+
+    if (history.past.length > 80) {
+      history.past.shift();
+    }
+    history.future = [];
+  }, []);
+
   // Update content of active tab with 500ms auto-save debounce
   const handleUpdateContent = useCallback((newContent: string) => {
     const currentActiveId = activeTabIdRef.current;
@@ -277,6 +321,17 @@ export default function App() {
         return tab;
       })
     );
+
+    // Debounced typing history snapshot (800ms of pause)
+    if (typingTimerRef.current) {
+      clearTimeout(typingTimerRef.current);
+    }
+    typingTimerRef.current = setTimeout(() => {
+      const tab = tabsRef.current.find((t) => t.id === currentActiveId);
+      if (tab) {
+        recordHistorySnapshot(currentActiveId, tab.content);
+      }
+    }, 800);
 
     if (isAutoSave) {
       setSaveStatus('saving');
@@ -298,7 +353,79 @@ export default function App() {
         autoSaveTimerRef.current = null;
       }
     }
-  }, [performAutoSave]);
+  }, [performAutoSave, recordHistorySnapshot]);
+
+  // Reliable Undo operation (reverts last format action or text change)
+  const handleUndo = useCallback(() => {
+    const currentTabId = activeTabIdRef.current;
+    const history = historyMapRef.current[currentTabId];
+    const textarea = textareaRef.current;
+    const activeTabItem = tabsRef.current.find((t) => t.id === currentTabId);
+    const currentContent = activeTabItem?.content ?? '';
+    const currentSelStart = textarea ? textarea.selectionStart : 0;
+    const currentSelEnd = textarea ? textarea.selectionEnd : 0;
+
+    if (history && history.past.length > 0) {
+      let previous = history.past.pop()!;
+      // If the top snapshot matches current content, pop the previous one
+      if (previous.content === currentContent && history.past.length > 0) {
+        previous = history.past.pop()!;
+      }
+
+      if (previous.content !== currentContent) {
+        history.future.push({
+          content: currentContent,
+          selectionStart: currentSelStart,
+          selectionEnd: currentSelEnd,
+        });
+
+        handleUpdateContent(previous.content);
+        if (textarea) {
+          setTimeout(() => {
+            textarea.focus();
+            textarea.setSelectionRange(previous.selectionStart, previous.selectionEnd);
+          }, 0);
+        }
+        return;
+      }
+    }
+
+    // Fallback to browser execCommand undo
+    document.execCommand('undo');
+  }, [handleUpdateContent]);
+
+  // Reliable Redo operation
+  const handleRedo = useCallback(() => {
+    const currentTabId = activeTabIdRef.current;
+    const history = historyMapRef.current[currentTabId];
+    const textarea = textareaRef.current;
+    const activeTabItem = tabsRef.current.find((t) => t.id === currentTabId);
+    const currentContent = activeTabItem?.content ?? '';
+    const currentSelStart = textarea ? textarea.selectionStart : 0;
+    const currentSelEnd = textarea ? textarea.selectionEnd : 0;
+
+    if (history && history.future.length > 0) {
+      const next = history.future.pop()!;
+
+      history.past.push({
+        content: currentContent,
+        selectionStart: currentSelStart,
+        selectionEnd: currentSelEnd,
+      });
+
+      handleUpdateContent(next.content);
+      if (textarea) {
+        setTimeout(() => {
+          textarea.focus();
+          textarea.setSelectionRange(next.selectionStart, next.selectionEnd);
+        }, 0);
+      }
+      return;
+    }
+
+    // Fallback to browser execCommand redo
+    document.execCommand('redo');
+  }, [handleUpdateContent]);
 
   // Window beforeunload & unmount protection
   useEffect(() => {
@@ -886,8 +1013,24 @@ export default function App() {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
+    if (type === 'undo') {
+      handleUndo();
+      return;
+    }
+    if (type === 'redo') {
+      handleRedo();
+      return;
+    }
+
     const { selectionStart, selectionEnd, value } = textarea;
     const selectedText = value.substring(selectionStart, selectionEnd);
+
+    // Save pre-formatting snapshot into undo stack immediately
+    recordHistorySnapshot(activeTabIdRef.current, value, selectionStart, selectionEnd);
+    if (typingTimerRef.current) {
+      clearTimeout(typingTimerRef.current);
+      typingTimerRef.current = null;
+    }
 
     let prefix = '';
     let suffix = '';
@@ -1057,31 +1200,46 @@ export default function App() {
         return;
       }
       case 'undo':
-        document.execCommand('undo');
+        handleUndo();
         return;
       case 'redo':
-        document.execCommand('redo');
+        handleRedo();
         return;
       default:
         break;
     }
 
+    const insertedText = prefix + replacement + suffix;
     const nextVal =
       value.substring(0, selectionStart) +
-      prefix +
-      replacement +
-      suffix +
+      insertedText +
       value.substring(selectionEnd);
 
-    handleUpdateContent(nextVal);
+    // Try native document.execCommand('insertText') for seamless browser undo integration
+    textarea.focus();
+    textarea.setSelectionRange(selectionStart, selectionEnd);
+    let insertedSuccessfully = false;
+    try {
+      insertedSuccessfully = document.execCommand('insertText', false, insertedText);
+    } catch {
+      insertedSuccessfully = false;
+    }
 
-    // Reposition cursor
-    setTimeout(() => {
-      textarea.focus();
-      textarea.selectionStart = selectionStart + prefix.length;
-      textarea.selectionEnd = selectionStart + prefix.length + replacement.length;
-    }, 0);
-  }, [handleUpdateContent]);
+    if (insertedSuccessfully) {
+      const newSelStart = selectionStart + prefix.length;
+      const newSelEnd = selectionStart + prefix.length + replacement.length;
+      textarea.setSelectionRange(newSelStart, newSelEnd);
+      handleUpdateContent(textarea.value);
+    } else {
+      handleUpdateContent(nextVal);
+      // Reposition cursor
+      setTimeout(() => {
+        textarea.focus();
+        textarea.selectionStart = selectionStart + prefix.length;
+        textarea.selectionEnd = selectionStart + prefix.length + replacement.length;
+      }, 0);
+    }
+  }, [handleUpdateContent, handleUndo, handleRedo, recordHistorySnapshot]);
 
   // Find & Replace match counter
   useEffect(() => {
@@ -1216,7 +1374,13 @@ export default function App() {
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const mod = isMac ? e.metaKey : e.ctrlKey;
 
-      if (mod && !e.shiftKey && e.key.toLowerCase() === 'n') {
+      if (mod && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        handleUndo();
+      } else if (mod && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+        e.preventDefault();
+        handleRedo();
+      } else if (mod && !e.shiftKey && e.key.toLowerCase() === 'n') {
         e.preventDefault();
         handleNewTab();
       } else if (mod && !e.shiftKey && e.key.toLowerCase() === 'w') {
@@ -1266,7 +1430,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeTabId, handleNewTab, handleCloseTab, handleReopenClosedTab, handleSaveFile, handleExportMarkdown, handleOpenFileClick, applyFormatting, handleChangeFontSize]);
+  }, [activeTabId, handleNewTab, handleCloseTab, handleReopenClosedTab, handleSaveFile, handleExportMarkdown, handleOpenFileClick, applyFormatting, handleChangeFontSize, handleUndo, handleRedo]);
 
   // Split Divider Dragging
   const handleSplitMouseDown = (e: React.MouseEvent) => {
@@ -1711,6 +1875,8 @@ export default function App() {
               grammarIssues={grammarIssues}
               onApplyGrammarFix={handleApplyGrammarFix}
               onOpenGrammarModal={() => setIsGrammarModalOpen(true)}
+              onUndo={handleUndo}
+              onRedo={handleRedo}
             />
           </div>
         )}
@@ -1814,9 +1980,15 @@ export default function App() {
           const textarea = textareaRef.current;
           if (textarea) {
             const { selectionStart, value } = textarea;
+            recordHistorySnapshot(activeTabIdRef.current, value, selectionStart, selectionStart);
             const nextVal = value.substring(0, selectionStart) + tableMd + value.substring(selectionStart);
             handleUpdateContent(nextVal);
+            setTimeout(() => {
+              textarea.focus();
+              textarea.selectionStart = textarea.selectionEnd = selectionStart + tableMd.length;
+            }, 0);
           } else {
+            recordHistorySnapshot(activeTabIdRef.current, activeTab.content, activeTab.content.length, activeTab.content.length);
             handleUpdateContent(activeTab.content + tableMd);
           }
         }}

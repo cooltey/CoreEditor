@@ -14,6 +14,8 @@ interface EditorProps {
   grammarIssues?: GrammarIssue[];
   onApplyGrammarFix?: (issue: GrammarIssue, replacement: string) => void;
   onOpenGrammarModal?: () => void;
+  onUndo?: () => void;
+  onRedo?: () => void;
 }
 
 interface ContextMenuState {
@@ -36,6 +38,8 @@ export const Editor: React.FC<EditorProps> = ({
   grammarIssues = [],
   onApplyGrammarFix,
   onOpenGrammarModal,
+  onUndo,
+  onRedo,
 }) => {
   const lineNumbersRef = useRef<HTMLDivElement>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
@@ -115,6 +119,27 @@ export const Editor: React.FC<EditorProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
+
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    const mod = isMac ? e.metaKey : e.ctrlKey;
+
+    // Undo: Ctrl+Z / Cmd+Z (without shift)
+    if (mod && !e.shiftKey && e.key.toLowerCase() === 'z') {
+      if (onUndo) {
+        e.preventDefault();
+        onUndo();
+        return;
+      }
+    }
+
+    // Redo: Ctrl+Y / Cmd+Y or Ctrl+Shift+Z / Cmd+Shift+Z
+    if (mod && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+      if (onRedo) {
+        e.preventDefault();
+        onRedo();
+        return;
+      }
+    }
 
     const { selectionStart, selectionEnd, value } = textarea;
 

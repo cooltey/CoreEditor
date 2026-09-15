@@ -16,298 +16,307 @@ export const AppLogo: React.FC<AppLogoProps> = ({ className = 'w-full h-full', s
       style={{ display: 'block' }}
     >
       <defs>
-        {/* Sleek App Icon Background (Neutral Dark Slate - No Red) */}
+        {/* Sleek Dark Minimalist App Squircle Background (No Red) */}
         <linearGradient id="appBg" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#252632" />
-          <stop offset="50%" stopColor="#1c1d25" />
-          <stop offset="100%" stopColor="#14141c" />
+          <stop offset="50%" stopColor="#1b1c24" />
+          <stop offset="100%" stopColor="#12131a" />
         </linearGradient>
 
-        {/* Outer Border Stroke */}
+        {/* Outer Squircle Rim */}
         <linearGradient id="bgBorder" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#48495a" />
-          <stop offset="100%" stopColor="#292a36" />
+          <stop offset="0%" stopColor="#4c4e61" />
+          <stop offset="100%" stopColor="#272834" />
         </linearGradient>
 
-        {/* Soft Golden Ambient Halo behind Doge */}
-        <radialGradient id="dogeHalo" cx="50%" cy="54%" r="48%">
-          <stop offset="0%" stopColor="#ffc043" stopOpacity="0.22" />
-          <stop offset="60%" stopColor="#ff9f1a" stopOpacity="0.06" />
-          <stop offset="100%" stopColor="#ff9f1a" stopOpacity="0" />
+        {/* Warm Ambient Backlight */}
+        <radialGradient id="dogeHalo" cx="52%" cy="48%" r="48%">
+          <stop offset="0%" stopColor="#ffb938" stopOpacity="0.28" />
+          <stop offset="60%" stopColor="#f59e0b" stopOpacity="0.08" />
+          <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
         </radialGradient>
 
-        {/* Shiba Golden Fur Gradient */}
-        <linearGradient id="shibaFur" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#ffca68" />
-          <stop offset="45%" stopColor="#f3a738" />
-          <stop offset="100%" stopColor="#d98218" />
+        {/* Shiba Golden-Honey Fur Gradient */}
+        <linearGradient id="shibaFur" x1="15%" y1="10%" x2="85%" y2="90%">
+          <stop offset="0%" stopColor="#ffd276" />
+          <stop offset="40%" stopColor="#f7ab35" />
+          <stop offset="100%" stopColor="#d97a15" />
         </linearGradient>
 
-        {/* Dark Fur Accent (Outer ear edge & shadows) */}
-        <linearGradient id="furDark" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#df8719" />
-          <stop offset="100%" stopColor="#b6650c" />
+        {/* Darker Fur Shading (Far ear & head contour) */}
+        <linearGradient id="shibaFurDark" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#dc8216" />
+          <stop offset="100%" stopColor="#a95507" />
         </linearGradient>
 
-        {/* Inner Ear Soft Pink Gradient */}
-        <linearGradient id="earInner" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#ffe4e8" />
-          <stop offset="50%" stopColor="#fca5b3" />
-          <stop offset="100%" stopColor="#f38497" />
+        {/* Soft Urajiro (White/Cream Fur) Gradient */}
+        <linearGradient id="urajiroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="85%" stopColor="#fff8ed" />
+          <stop offset="100%" stopColor="#faece0" />
         </linearGradient>
 
-        {/* Anime Eyes Amber-Gold Gradient */}
-        <linearGradient id="animeEyeIris" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#211005" />
-          <stop offset="40%" stopColor="#3d1d08" />
-          <stop offset="70%" stopColor="#9a4d0e" />
-          <stop offset="100%" stopColor="#e79026" />
+        {/* Inner Ear Soft Pastel Pink */}
+        <linearGradient id="earInner" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffe9ee" />
+          <stop offset="60%" stopColor="#fda4b5" />
+          <stop offset="100%" stopColor="#f07e92" />
         </linearGradient>
 
-        {/* Drop Shadow for clean depth */}
-        <filter id="dogeShadow" x="-10%" y="-10%" width="120%" height="125%">
-          <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#000000" floodOpacity="0.45" />
+        {/* Anime Side-Eye Amber Gradient */}
+        <linearGradient id="sideEyeIris" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#1c0e04" />
+          <stop offset="35%" stopColor="#3d1b06" />
+          <stop offset="70%" stopColor="#9e4b09" />
+          <stop offset="100%" stopColor="#f29d2a" />
+        </linearGradient>
+
+        {/* Drop shadow for Doge character */}
+        <filter id="dogeShadow" x="-10%" y="-10%" width="125%" height="125%">
+          <feDropShadow dx="-2" dy="12" stdDeviation="14" floodColor="#000000" floodOpacity="0.5" />
         </filter>
       </defs>
 
-      {/* 1. Base App Icon Container (Simple, Clean, Modern Squircle) */}
+      {/* 1. App Icon Base Container (Minimal Dark Squircle) */}
       <rect width="512" height="512" rx="116" fill="url(#appBg)" />
-      <rect width="502" height="502" x="5" y="5" rx="111" fill="none" stroke="url(#bgBorder)" strokeWidth="3" />
+      <rect width="502" height="502" x="5" y="5" rx="111" fill="none" stroke="url(#bgBorder)" strokeWidth="3.5" />
 
-      {/* 2. Soft Ambient Halo */}
-      <circle cx="256" cy="275" r="185" fill="url(#dogeHalo)" />
+      {/* 2. Soft Ambient Halo Glow */}
+      <circle cx="260" cy="256" r="185" fill="url(#dogeHalo)" />
 
-      {/* 3. Anime Doge Character */}
-      <g id="anime-doge-head" filter="url(#dogeShadow)">
-        {/* --- EARS --- */}
-        {/* Left Ear Outer */}
-        <path
-          d="M 172 195 L 116 88 C 111 78, 125 70, 134 78 L 214 146 Z"
-          fill="url(#furDark)"
-        />
-        {/* Left Ear Base */}
-        <path
-          d="M 166 198 L 122 94 C 119 86, 129 80, 136 86 L 208 148 Z"
-          fill="url(#shibaFur)"
-        />
-        {/* Left Ear Inner Fluff */}
-        <path
-          d="M 160 190 L 132 110 C 130 104, 137 101, 142 105 L 194 150 C 182 165, 172 178, 160 190 Z"
-          fill="url(#earInner)"
-        />
-        {/* Left Ear White Fluff Tufts */}
-        <path
-          d="M 152 170 C 160 160, 175 162, 178 152 C 168 155, 162 148, 155 158 Z"
-          fill="#fffdfa"
-          opacity="0.9"
-        />
-
-        {/* Right Ear Outer */}
-        <path
-          d="M 340 195 L 396 88 C 401 78, 387 70, 378 78 L 298 146 Z"
-          fill="url(#furDark)"
-        />
-        {/* Right Ear Base */}
-        <path
-          d="M 346 198 L 390 94 C 393 86, 383 80, 376 86 L 304 148 Z"
-          fill="url(#shibaFur)"
-        />
-        {/* Right Ear Inner Fluff */}
-        <path
-          d="M 352 190 L 380 110 C 382 104, 375 101, 370 105 L 318 150 C 330 165, 340 178, 352 190 Z"
-          fill="url(#earInner)"
-        />
-        {/* Right Ear White Fluff Tufts */}
-        <path
-          d="M 360 170 C 352 160, 337 162, 334 152 C 344 155, 350 148, 357 158 Z"
-          fill="#fffdfa"
-          opacity="0.9"
-        />
-
-        {/* --- MAIN HEAD SILHOUETTE --- */}
-        {/* Golden Shiba Head Base */}
-        <path
-          d="M 148 200 
-             C 120 230, 95 285, 115 340 
-             C 125 365, 150 395, 195 425 
-             C 230 445, 282 445, 317 425 
-             C 362 395, 387 365, 397 340 
-             C 417 285, 392 230, 364 200 
-             C 335 170, 305 160, 256 160 
-             C 207 160, 177 170, 148 200 Z"
-          fill="url(#shibaFur)"
-        />
-
-        {/* Cute Anime Cheek Tuft Hair (Left) */}
-        <path
-          d="M 112 315 C 92 328, 96 348, 122 355 C 104 358, 108 375, 134 376 C 122 384, 132 396, 150 393"
-          fill="url(#shibaFur)"
-        />
-        {/* Cute Anime Cheek Tuft Hair (Right) */}
-        <path
-          d="M 400 315 C 420 328, 416 348, 390 355 C 408 358, 404 375, 378 376 C 390 384, 380 396, 362 393"
-          fill="url(#shibaFur)"
-        />
-
-        {/* --- URAJIRO (White/Cream Muzzle & Cheek Fur) --- */}
-        <path
-          d="M 152 300 
-             C 142 350, 170 415, 215 428 
-             C 235 434, 277 434, 297 428 
-             C 342 415, 370 350, 360 300 
-             C 348 290, 328 285, 308 300 
-             C 285 315, 270 318, 256 318 
-             C 242 318, 227 315, 204 300 
-             C 184 285, 164 290, 152 300 Z"
-          fill="#fffdf8"
-        />
-
-        {/* Chin Fluff Detail */}
-        <path
-          d="M 236 430 C 248 436, 264 436, 276 430 C 266 438, 246 438, 236 430 Z"
-          fill="#ede6d8"
-        />
-
-        {/* --- ANIME SHIBA EYEBROW DOTS (Iconic White Marks) --- */}
-        <ellipse cx="202" cy="225" rx="13" ry="9" fill="#fffdfa" transform="rotate(-8 202 225)" />
-        <ellipse cx="310" cy="225" rx="13" ry="9" fill="#fffdfa" transform="rotate(8 310 225)" />
-
-        {/* --- BIG ANIME DOGE EYES --- */}
-        {/* LEFT EYE */}
-        <g id="anime-left-eye">
-          {/* Eye White */}
-          <ellipse cx="198" cy="272" rx="26" ry="30" fill="#ffffff" />
-          {/* Iris */}
-          <ellipse cx="199" cy="272" rx="23" ry="28" fill="url(#animeEyeIris)" />
-          {/* Pupil */}
-          <ellipse cx="199" cy="272" rx="13" ry="17" fill="#120803" />
-          {/* Warm Amber Crescent Light */}
+      {/* 3. Anime Doge Side-Profile (Iconic 3/4 Side-Glance) */}
+      <g id="side-profile-doge" filter="url(#dogeShadow)">
+        
+        {/* --- FAR EAR (Right/Back Ear) --- */}
+        <g id="far-ear">
           <path
-            d="M 183 283 C 188 296, 210 296, 215 283 C 210 291, 188 291, 183 283 Z"
-            fill="#fdb441"
-            opacity="0.85"
+            d="M 305 145 
+               L 358 64 
+               C 365 54, 380 64, 375 76 
+               L 352 165 Z"
+            fill="url(#shibaFurDark)"
           />
-          {/* Primary Big Gleam */}
-          <circle cx="189" cy="258" r="9" fill="#ffffff" />
-          {/* Secondary Star/Sparkle Gleam */}
-          <circle cx="211" cy="281" r="5" fill="#ffffff" />
-          <circle cx="193" cy="288" r="2.5" fill="#ffffff" opacity="0.8" />
-          {/* Anime Upper Eyelash / Lid Line */}
           <path
-            d="M 166 265 C 176 242, 216 242, 228 262"
-            stroke="#21120a"
-            strokeWidth="5"
+            d="M 318 142 
+               L 356 78 
+               C 360 72, 368 76, 365 85 
+               L 348 152 Z"
+            fill="url(#earInner)"
+            opacity="0.8"
+          />
+        </g>
+
+        {/* --- MAIN HEAD & BODY SILHOUETTE (Facing Left) --- */}
+        <path
+          d="M 235 158 
+             C 210 162, 178 188, 160 216 
+             C 146 238, 130 252, 114 260 
+             C 105 264, 106 276, 115 281 
+             C 126 288, 142 292, 158 293 
+             C 142 308, 145 328, 162 334 
+             C 180 340, 195 348, 202 364 
+             C 216 398, 235 432, 252 445 
+             C 285 450, 350 450, 385 440 
+             C 395 410, 402 360, 396 315 
+             C 390 260, 372 195, 335 165 
+             C 300 140, 262 154, 235 158 Z"
+          fill="url(#shibaFur)"
+        />
+
+        {/* Back of Neck / Fluffy Fur Curve Details */}
+        <path
+          d="M 390 295 C 404 312, 402 334, 386 348 C 400 362, 396 385, 380 398"
+          fill="none"
+          stroke="url(#shibaFurDark)"
+          strokeWidth="6"
+          strokeLinecap="round"
+          opacity="0.4"
+        />
+
+        {/* --- NEAR EAR (Front Left Ear) --- */}
+        <g id="near-ear">
+          {/* Ear Outer Shell */}
+          <path
+            d="M 226 166 
+               L 236 62 
+               C 239 48, 258 50, 264 64 
+               L 298 165 Z"
+            fill="url(#shibaFur)"
+          />
+          {/* Ear Dark Outer Edge Rim */}
+          <path
+            d="M 258 58 L 298 165 L 286 168 L 250 68 Z"
+            fill="url(#shibaFurDark)"
+            opacity="0.6"
+          />
+          {/* Ear Inner Cavity */}
+          <path
+            d="M 238 158 
+               L 246 80 
+               C 248 72, 256 74, 258 82 
+               L 282 158 Z"
+            fill="url(#earInner)"
+          />
+          {/* Ear White Fluff Tufts */}
+          <path
+            d="M 238 140 C 248 132, 262 135, 268 126 C 258 128, 250 120, 244 130 Z"
+            fill="#ffffff"
+            opacity="0.95"
+          />
+          <path
+            d="M 248 155 C 256 148, 270 150, 274 144 C 266 145, 260 140, 255 148 Z"
+            fill="#ffffff"
+            opacity="0.9"
+          />
+        </g>
+
+        {/* --- URAJIRO (White/Cream Fur on Muzzle, Cheek, & Throat) --- */}
+        <path
+          d="M 114 266 
+             C 125 268, 145 272, 160 274 
+             C 178 276, 202 284, 218 300 
+             C 236 318, 248 348, 240 375 
+             C 232 402, 240 425, 252 445 
+             L 215 440 
+             C 192 418, 178 382, 168 352 
+             C 158 340, 146 328, 144 312 
+             C 130 306, 120 295, 114 280 Z"
+          fill="url(#urajiroGrad)"
+        />
+
+        {/* Cheek Fluff Outline Soft Definition */}
+        <path
+          d="M 160 274 C 180 276, 205 284, 218 300 C 235 318, 246 346, 240 375"
+          fill="none"
+          stroke="#e8dbcd"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+        />
+
+        {/* Cute Cheek Tufts (Anime Stylized Whisker/Fur Peaks) */}
+        <path
+          d="M 226 315 C 240 322, 242 334, 230 340 C 242 346, 238 360, 224 362"
+          fill="url(#urajiroGrad)"
+        />
+
+        {/* --- ICONIC SHIBA EYEBROW DOT (Moro-tsuno) --- */}
+        <ellipse
+          cx="200"
+          cy="188"
+          rx="14"
+          ry="10"
+          fill="#ffffff"
+          transform="rotate(-15 200 188)"
+        />
+
+        {/* --- THE LEGENDARY ANIME DOGE SIDE-EYE (Glancing at the Viewer) --- */}
+        <g id="anime-doge-side-eye">
+          {/* Eye Sclera (White) */}
+          <path
+            d="M 175 224 
+               C 182 205, 222 205, 232 225 
+               C 236 235, 226 248, 206 250 
+               C 186 252, 172 240, 175 224 Z"
+            fill="#ffffff"
+          />
+
+          {/* Iris (Large, Expressive Anime Amber-Gold) */}
+          <ellipse cx="206" cy="227" rx="20" ry="22" fill="url(#sideEyeIris)" />
+
+          {/* Pupil (Deep Espresso Black) */}
+          <ellipse cx="207" cy="227" rx="11" ry="14" fill="#0f0502" />
+
+          {/* Crescent Amber Inner Glow */}
+          <path
+            d="M 194 235 C 198 244, 216 244, 220 235 C 215 240, 198 240, 194 235 Z"
+            fill="#feb740"
+            opacity="0.9"
+          />
+
+          {/* Primary High-Gloss Catchlight (Top-Left Anime Sparkle) */}
+          <circle cx="197" cy="216" r="8" fill="#ffffff" />
+
+          {/* Secondary Star/Dot Catchlight (Bottom-Right) */}
+          <circle cx="217" cy="235" r="4.5" fill="#ffffff" />
+          <circle cx="203" cy="241" r="2.2" fill="#ffffff" opacity="0.8" />
+
+          {/* Anime Upper Eyelash & Eyelid Line */}
+          <path
+            d="M 166 226 
+               C 178 202, 224 200, 238 222"
+            stroke="#1d0d05"
+            strokeWidth="5.5"
             strokeLinecap="round"
             fill="none"
           />
-          {/* Little Eyelash Flick */}
+          {/* Cute Anime Eyelash Wing Flick */}
           <path
-            d="M 224 256 L 232 250"
-            stroke="#21120a"
-            strokeWidth="3.5"
+            d="M 235 218 L 244 212"
+            stroke="#1d0d05"
+            strokeWidth="4"
             strokeLinecap="round"
           />
-        </g>
 
-        {/* RIGHT EYE */}
-        <g id="anime-right-eye">
-          {/* Eye White */}
-          <ellipse cx="314" cy="272" rx="26" ry="30" fill="#ffffff" />
-          {/* Iris */}
-          <ellipse cx="313" cy="272" rx="23" ry="28" fill="url(#animeEyeIris)" />
-          {/* Pupil */}
-          <ellipse cx="313" cy="272" rx="13" ry="17" fill="#120803" />
-          {/* Warm Amber Crescent Light */}
+          {/* Soft Eyelid Crease Line above Eye */}
           <path
-            d="M 297 283 C 302 296, 324 296, 329 283 C 324 291, 302 291, 297 283 Z"
-            fill="#fdb441"
-            opacity="0.85"
-          />
-          {/* Primary Big Gleam */}
-          <circle cx="303" cy="258" r="9" fill="#ffffff" />
-          {/* Secondary Star/Sparkle Gleam */}
-          <circle cx="325" cy="281" r="5" fill="#ffffff" />
-          <circle cx="307" cy="288" r="2.5" fill="#ffffff" opacity="0.8" />
-          {/* Anime Upper Eyelash / Lid Line */}
-          <path
-            d="M 346 265 C 336 242, 296 242, 284 262"
-            stroke="#21120a"
-            strokeWidth="5"
+            d="M 182 200 C 196 195, 218 196, 228 205"
+            stroke="#b86915"
+            strokeWidth="2.5"
             strokeLinecap="round"
             fill="none"
-          />
-          {/* Little Eyelash Flick */}
-          <path
-            d="M 288 256 L 280 250"
-            stroke="#21120a"
-            strokeWidth="3.5"
-            strokeLinecap="round"
+            opacity="0.6"
           />
         </g>
 
-        {/* --- ANIME BLUSH CHEEKS --- */}
-        <g id="anime-blush" opacity="0.6">
-          <ellipse cx="152" cy="322" rx="19" ry="10" fill="#ff7f8a" />
-          <line x1="142" y1="318" x2="148" y2="326" stroke="#fa5252" strokeWidth="2" strokeLinecap="round" />
-          <line x1="150" y1="318" x2="156" y2="326" stroke="#fa5252" strokeWidth="2" strokeLinecap="round" />
-          <line x1="158" y1="318" x2="164" y2="326" stroke="#fa5252" strokeWidth="2" strokeLinecap="round" />
-
-          <ellipse cx="360" cy="322" rx="19" ry="10" fill="#ff7f8a" />
-          <line x1="348" y1="318" x2="354" y2="326" stroke="#fa5252" strokeWidth="2" strokeLinecap="round" />
-          <line x1="356" y1="318" x2="362" y2="326" stroke="#fa5252" strokeWidth="2" strokeLinecap="round" />
-          <line x1="364" y1="318" x2="370" y2="326" stroke="#fa5252" strokeWidth="2" strokeLinecap="round" />
+        {/* --- ANIME CHEEK BLUSH (Cute subtle pink blush) --- */}
+        <g id="anime-blush" opacity="0.75">
+          <ellipse cx="196" cy="275" rx="18" ry="9" fill="#ff7f8f" transform="rotate(-6 196 275)" />
+          <line x1="187" y1="272" x2="193" y2="279" stroke="#f43f5e" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="195" y1="272" x2="201" y2="279" stroke="#f43f5e" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="203" y1="272" x2="209" y2="279" stroke="#f43f5e" strokeWidth="2.2" strokeLinecap="round" />
         </g>
 
-        {/* --- NOSE --- */}
+        {/* --- NOSE (Tip of Snout) --- */}
         <g id="doge-nose">
-          {/* Nose Body */}
           <path
-            d="M 243 324 
-               C 241 316, 250 312, 256 312 
-               C 262 312, 271 316, 269 324 
-               C 267 334, 259 339, 256 339 
-               C 253 339, 245 334, 243 324 Z"
-            fill="#1f1a18"
+            d="M 104 260 
+               C 102 254, 112 248, 118 250 
+               C 125 252, 127 260, 122 268 
+               C 117 274, 106 272, 104 260 Z"
+            fill="#1c120c"
           />
-          {/* Top Nose Highlight */}
-          <ellipse cx="253" cy="317" rx="4.5" ry="2.2" fill="#ffffff" opacity="0.75" />
+          {/* Nose Highlight */}
+          <ellipse cx="114" cy="254" rx="4" ry="2" fill="#ffffff" opacity="0.8" />
         </g>
 
-        {/* --- CUTE ANIME 'ω' SMILING MOUTH --- */}
+        {/* --- MOUTH (Knowing, subtle Shiba smile smirk) --- */}
         <g id="doge-mouth">
-          {/* Philtrum line */}
-          <line x1="256" y1="339" x2="256" y2="349" stroke="#3d2616" strokeWidth="3.2" strokeLinecap="round" />
-          {/* Sweet Anime Cat/Doge Mouth Curves */}
+          {/* Upper snout contour line */}
           <path
-            d="M 226 352 
-               C 234 362, 248 362, 256 349 
-               C 264 362, 278 362, 286 352"
-            stroke="#3d2616"
+            d="M 118 266 
+               C 132 274, 150 276, 168 280 
+               C 180 282, 188 288, 192 296"
+            stroke="#452410"
             strokeWidth="3.6"
             strokeLinecap="round"
             fill="none"
           />
-          {/* Cheek Smile Dimple Ticks */}
-          <path d="M 224 348 C 223 352, 226 355, 228 355" stroke="#3d2616" strokeWidth="2.8" strokeLinecap="round" fill="none" />
-          <path d="M 288 348 C 289 352, 286 355, 284 355" stroke="#3d2616" strokeWidth="2.8" strokeLinecap="round" fill="none" />
-
-          {/* Tiny Cute Anime Tongue */}
+          {/* Subtle smirk corner tick */}
           <path
-            d="M 250 357 C 250 367, 262 367, 262 357 Z"
-            fill="#ff7b89"
-          />
-          <path
-            d="M 252 357 C 252 362, 260 362, 260 357 Z"
-            fill="#ffa6b1"
+            d="M 190 292 C 194 290, 198 292, 197 296"
+            stroke="#452410"
+            strokeWidth="3"
+            strokeLinecap="round"
+            fill="none"
           />
         </g>
 
-        {/* Little Cute Sparkles around Head (Anime Aesthetic) */}
-        <g fill="#fed776" opacity="0.85">
-          {/* Top Left Sparkle */}
-          <path d="M 120 160 Q 120 172 108 172 Q 120 172 120 184 Q 120 172 132 172 Q 120 172 120 160 Z" />
-          {/* Top Right Sparkle */}
-          <path d="M 390 160 Q 390 172 378 172 Q 390 172 390 184 Q 390 172 402 172 Q 390 172 390 160 Z" />
+        {/* --- CUTE ANIME SPARKLES (Minimalist Accent) --- */}
+        <g fill="#fed776" opacity="0.9">
+          {/* Sparkle near eye/cheek */}
+          <path d="M 152 188 Q 152 198 142 198 Q 152 198 152 208 Q 152 198 162 198 Q 152 198 152 188 Z" />
+          {/* Sparkle behind ear */}
+          <path d="M 372 142 Q 372 150 364 150 Q 372 150 372 158 Q 372 150 380 150 Q 372 150 372 142 Z" opacity="0.7" />
         </g>
       </g>
     </svg>

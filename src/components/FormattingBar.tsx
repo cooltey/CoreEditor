@@ -63,7 +63,7 @@ export const FormattingBar: React.FC<FormattingBarProps> = ({
   return (
     <div 
       id="app-formatting-bar"
-      className="h-8 bg-[#202026] border-b border-[#2d2d36] flex items-center justify-between px-2 text-xs select-none relative z-30 overflow-visible"
+      className="h-8 bg-[#202026] border-b border-[#2d2d36] flex items-center justify-between px-2 text-xs select-none relative z-10 overflow-visible"
     >
       {/* Left section: Formatting actions */}
       <div className="flex items-center gap-0.5 shrink-0">
