@@ -3,13 +3,26 @@ const path = require('path');
 const fs = require('fs');
 
 // Resolve app icon across both dev and packaged production builds
+// Windows requires multi-resolution .ico to render full color in Taskbar and Alt+Tab
 function getAppIconPath() {
-  const candidates = [
-    path.join(__dirname, '../dist/doge-target-icon.svg'),
-    path.join(__dirname, '../public/doge-target-icon.svg'),
-    path.join(__dirname, '../dist/favicon.svg'),
-    path.join(__dirname, '../public/favicon.svg'),
-  ];
+  const isWin = process.platform === 'win32';
+  const candidates = isWin
+    ? [
+        path.join(__dirname, '../build/icon.ico'),
+        path.join(__dirname, '../public/icon.ico'),
+        path.join(__dirname, '../dist/icon.ico'),
+        path.join(__dirname, 'resources/icon.ico'),
+        path.join(process.resourcesPath, 'icon.ico'),
+        path.join(__dirname, '../public/icon.png'),
+        path.join(__dirname, '../dist/icon.png'),
+      ]
+    : [
+        path.join(__dirname, '../public/icon.png'),
+        path.join(__dirname, '../dist/icon.png'),
+        path.join(__dirname, '../build/icon.png'),
+        path.join(__dirname, '../public/doge-target-icon.svg'),
+      ];
+
   for (const candidate of candidates) {
     if (fs.existsSync(candidate)) return candidate;
   }

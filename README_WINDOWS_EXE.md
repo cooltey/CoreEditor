@@ -75,8 +75,20 @@ npm run electron
 
 - `electron/main.cjs`: Electron main process (handles custom titlebar, minimize/maximize/close, multi-process lifecycle)
 - `electron/preload.cjs`: Secure ContextBridge IPC communication channel
+- `scripts/generate-icons.cjs`: Generates standard Windows `.ico` (256/128/64/48/32/16 multi-resolution) & 512x512 PNG
+- `build/icon.ico`: High-color native Windows Icon resource embedded into `.exe` and NSIS installer
 - `package.json`: Windows build configurations and Electron-Builder settings
 - `build-windows-exe.bat`: One-click automated Windows packaging batch script
 - `run-windows-desktop.bat`: Direct desktop development launch script
 - `vite.config.ts`: Configured with `base: './'` for local `file://` protocol compatibility
+
+---
+
+## 🎨 Windows Icon Cache & Refresh Tips
+
+If Windows continues to show an old cached icon after reinstalling or rebuilding:
+1. **Unpin and Re-pin from Taskbar**: If you previously pinned the app with the old icon, right-click the Taskbar icon, select **"Unpin from taskbar"**, launch the newly built app from Start Menu or Desktop, and select **"Pin to taskbar"**.
+2. **Clear Windows Icon Cache**:
+   - Open Command Prompt or Run (`Win + R`)
+   - Run: `ie4uinit.exe -show` (or restart `explorer.exe` via Task Manager).
 

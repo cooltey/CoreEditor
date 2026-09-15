@@ -12,11 +12,12 @@
     "clean": "rm -rf dist server.js release",
     "lint": "tsc --noEmit",
     "electron": "electron .",
-    "build:win": "vite build && electron-builder --win nsis",
-    "build:installer": "vite build && electron-builder --win nsis",
-    "build:portable": "vite build && electron-builder --win portable",
-    "package:win": "vite build && electron-builder --win nsis",
-    "package:win-installer": "vite build && electron-builder --win nsis"
+    "icons": "node scripts/generate-icons.cjs",
+    "build:win": "node scripts/generate-icons.cjs && vite build && electron-builder --win nsis",
+    "build:installer": "node scripts/generate-icons.cjs && vite build && electron-builder --win nsis",
+    "build:portable": "node scripts/generate-icons.cjs && vite build && electron-builder --win portable",
+    "package:win": "node scripts/generate-icons.cjs && vite build && electron-builder --win nsis",
+    "package:win-installer": "node scripts/generate-icons.cjs && vite build && electron-builder --win nsis"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
@@ -42,12 +43,14 @@
     "@tailwindcss/oxide-win32-x64-msvc": "^4.3.3"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
     "autoprefixer": "^10.4.21",
     "electron": "^44.3.0",
     "electron-builder": "^26.15.3",
     "esbuild": "^0.25.0",
+    "png-to-ico": "^3.0.2",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
@@ -62,10 +65,11 @@
     "files": [
       "dist/**/*",
       "electron/**/*",
-      "public/**/*"
+      "public/**/*",
+      "build/**/*"
     ],
     "win": {
-      "icon": "public/doge-target-icon.svg",
+      "icon": "build/icon.ico",
       "target": [
         {
           "target": "nsis",
@@ -88,6 +92,9 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "CoreEditor",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
       "artifactName": "${productName}-Setup-${version}.${ext}",
       "uninstallDisplayName": "CoreEditor"
     },
