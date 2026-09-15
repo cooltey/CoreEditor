@@ -37,14 +37,12 @@ if not exist "node_modules\@tailwindcss\oxide-win32-x64-msvc" (
 )
 
 echo.
-echo [2/3] Generating Windows Icons and Compiling Windows .exe...
-call node scripts/generate-icons.cjs
+echo [2/3] Compiling React assets and Packaging Windows .exe...
 call npm run build:win
 if %errorlevel% neq 0 (
     echo.
     echo [!] Initial build encountered an issue. Attempting comprehensive Windows native modules fix...
     call npm install @rollup/rollup-win32-x64-msvc lightningcss-win32-x64-msvc @tailwindcss/oxide-win32-x64-msvc --force
-    call node scripts/generate-icons.cjs
     call npm run build:win
 )
 

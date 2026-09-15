@@ -13,11 +13,11 @@
     "lint": "tsc --noEmit",
     "electron": "electron .",
     "icons": "node scripts/generate-icons.cjs",
-    "build:win": "node scripts/generate-icons.cjs && vite build && electron-builder --win nsis",
-    "build:installer": "node scripts/generate-icons.cjs && vite build && electron-builder --win nsis",
-    "build:portable": "node scripts/generate-icons.cjs && vite build && electron-builder --win portable",
-    "package:win": "node scripts/generate-icons.cjs && vite build && electron-builder --win nsis",
-    "package:win-installer": "node scripts/generate-icons.cjs && vite build && electron-builder --win nsis"
+    "build:win": "vite build && electron-builder --win nsis",
+    "build:installer": "vite build && electron-builder --win nsis",
+    "build:portable": "vite build && electron-builder --win portable",
+    "package:win": "vite build && electron-builder --win nsis",
+    "package:win-installer": "vite build && electron-builder --win nsis"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
