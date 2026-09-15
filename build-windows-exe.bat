@@ -47,15 +47,24 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo [3/3] Build Finished Successfully!
+echo [3/3] Checking output file...
 echo =======================================================
-echo Your Windows Installer is ready in:
-echo   .\release\CoreEditor-Setup-1.0.0.exe
-echo.
-echo * Note: Double-click CoreEditor-Setup-1.0.0.exe to install.
-echo   It installs natively into Windows with a Start Menu
-echo   and Desktop shortcut, and stays permanently pinned
-echo   to your Taskbar!
+if exist "release\CoreEditor-Setup-1.0.0.exe" (
+    echo [SUCCESS] Windows Installer created successfully!
+    echo Location: .\release\CoreEditor-Setup-1.0.0.exe
+    echo.
+    echo * Double-click CoreEditor-Setup-1.0.0.exe to install.
+    echo   It installs natively with Desktop and Start Menu shortcuts,
+    echo   and can be pinned to your Taskbar with full color icons!
+) else (
+    echo [*] Checking generated files in release directory:
+    dir /b release\*.exe 2>nul
+    echo.
+    if %errorlevel% neq 0 (
+        echo [!] Warning: No .exe installer found in .\release folder.
+        echo Please review the build log above for error details.
+    )
+)
 echo =======================================================
 echo.
 

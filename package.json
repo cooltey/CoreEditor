@@ -2,6 +2,8 @@
   "name": "coreeditor",
   "private": true,
   "version": "1.0.0",
+  "description": "CoreEditor - Modern Markdown Editor",
+  "author": "CoreEditor",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
@@ -69,7 +71,8 @@
       "build/**/*"
     ],
     "win": {
-      "icon": "build/icon.ico",
+      "icon": "public/icon.ico",
+      "artifactName": "${productName}-Setup-${version}.${ext}",
       "target": [
         {
           "target": "nsis",
@@ -92,9 +95,9 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "CoreEditor",
-      "installerIcon": "build/icon.ico",
-      "uninstallerIcon": "build/icon.ico",
-      "installerHeaderIcon": "build/icon.ico",
+      "installerIcon": "public/icon.ico",
+      "uninstallerIcon": "public/icon.ico",
+      "installerHeaderIcon": "public/icon.ico",
       "artifactName": "${productName}-Setup-${version}.${ext}",
       "uninstallDisplayName": "CoreEditor"
     },
